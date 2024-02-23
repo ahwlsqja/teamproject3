@@ -1,0 +1,135 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  userId    Int      @id @default(autoincrement()) @map("userId")
+  email     String   @unique @map("email")
+  password  String   @map("password")
+  createdAt DateTime @default(now()) @map("createdAt")
+  updatedAt DateTime @updatedAt @map("updatedAt")
+  name      String   @map("name")
+  intro      String?   @map("intro")
+  emailTokens String? @map("emailTokens")
+  profile_image String? @map("profile_image")
+  age           Int @map("age")
+  gender        Gender @map("gender")
+  user_status User_Status @default(nonpass)
+  reviews Reviews[]
+  pets Pets[]
+  @@map("Users")
+}
+
+enum User_Status {
+  pass
+  nonpass
+}
+
+
+enum Gender { 
+  Man 
+  Woman
+  Transgender 
+  }
+
+
+model Reviews {
+  reviewid  Int      @id @default(autoincrement()) @map("reviewid")
+  sitterid  Int      @map("sitterid")
+  userId    Int      @map("userId")
+  title     String   @map("title")
+  content   String   @map("content") @db.Text
+  createdAt DateTime @default(now()) @map("createdAt")
+  updatedAt DateTime @updatedAt @map("updatedAt")
+  status    Status   @default(APPLY)
+  user Users @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  @@map("Reviews")
+}
+
+enum Status {
+  APPLY
+  DROP
+  PASS 
+  INTERVIEW1
+  INTERVIEW2
+  FINAL_PASS
+}
+
+model Sitters {
+  sitterId    Int      @id @default(autoincrement()) @map("sitterId")
+  email    String      @map("email")
+  name     String   @map("name") @db.VarChar(50)
+  profile_image   String?   @map("profile_image")
+  email_verified  Int  @map("email_verified")
+  phone_number       String  @map("phone_number")
+  password      Int     @map("password")
+  createdAt DateTime @default(now()) @map("createdAt")
+  updatedAt DateTime @updatedAt @map("updatedAt")
+  career  Int @map("career")
+  intro  String? @map("intro")
+  age  Int? @map("age")
+  gender  Int? @map("gender")
+  local  String @map("local")
+  ablepettype  Ablepettype @map("ablepettype")
+  reservations Reservations[]
+  @@map("Sitters")
+}
+
+enum Ablepettype {
+  dog
+  cat
+}
+
+
+model Reservations {
+  Id       Int  @id
+  sitterId Int  
+  startDay DateTime
+  lastDay DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  status TASKSTATUS @default(ACCEPTED)
+  reservationPet ReservationPet[]
+  sitters Sitters @relation(fields: [sitterId], references: [sitterId], onDelete: Cascade)
+}
+enum TASKSTATUS {
+  ACCEPTED
+  APPLYING
+  REJECTED
+}
+model ReservationPet {
+  reservationPetId Int @id @default(autoincrement())
+  petId Int
+  Id Int
+  reservations Reservations @relation(fields: [Id], references: [Id], onDelete: Cascade)
+  pets Pets @relation(fields: [petId], references: [petId], onDelete: Cascade)
+}
+
+model Pets {
+  petId    Int      @id @default(autoincrement()) @map("petId")
+  name     String   @map("name") @db.VarChar(50)
+  userId   Int   @map("userId")
+  pettype  PETTYPE  @map("pettype")
+  age  Int @map("age")
+  pet_image String @map("pet_image")
+  reservationPet ReservationPet[] 
+  user Users @relation(fields: [userId], references: [userId], onDelete: Cascade)
+}
+
+
+
+enum PETTYPE {
+DOG
+CAT
+}
