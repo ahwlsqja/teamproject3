@@ -14,9 +14,10 @@ export class UsersRepository {
         });
     }
 
-    createUser = async (email, hashedPassword, name, phone_number, intro, age, profile_image, gender) => {
+    createUser = async (email, hashedPassword, name, phone_number, intro, age, gender) => {
+        const imageUrl = req.file.Location;
         const token = Math.floor(Math.random() * 900000) + 100000;
-        const user = await this.prisma.$transaction(async(tx) => {
+        const [user] = await this.prisma.$transaction(async(tx) => {
             const user = await tx.users.create({
                 data: {
                     email,
@@ -28,11 +29,12 @@ export class UsersRepository {
                     gender,
                     user_status: "nonpass",
                     emailTokens: token.toString(),
+                    profile_image: imageUrl,
                 }
             });
 
             await emailVerificationMiddleware(email, token);
-            return user
+            return [ user ]
         },{
             isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted
         });  
