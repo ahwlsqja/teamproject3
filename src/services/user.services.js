@@ -8,7 +8,7 @@ export class UsersService {
         this.usersRepository = usersRepository;
     }
 
-
+    // 회원가입
     signUp = async (email, password, name, phone_number, intro, age, profile_image,gender) => {
         await new Promise((resolve) => setTimeout(resolve, 2000));
 
@@ -30,7 +30,7 @@ export class UsersService {
     }
 
 
-
+    // 회원가입 이메일 인증
     verifySighUp = async ( email, verifiedusertoken ) => {
         await new Promise((resolve) => setTimeout(resolve, 2000));
         const user = await this.usersRepository.findUserByEmail(email);
@@ -49,6 +49,7 @@ export class UsersService {
         }
     }
 
+    // 로그인 
     signIn = async (email, password) => {
         const user = await this.usersRepository.findUserByEmail(email);
 
@@ -70,6 +71,8 @@ export class UsersService {
         return { token, refreshToken };
 
     }
+
+    // 리프레쉬 코튼으로 갱신
     refreshToken = async (refreshToken) => {
         if(!refreshToken){
             throw new Error('리프레쉬 토큰이 없습니다.');
