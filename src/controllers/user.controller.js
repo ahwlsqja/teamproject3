@@ -15,3 +15,15 @@ findUserByEmail = async (req, res, next) => {
     next(err);
   }
 };
+
+// 로그인한 유저
+getLoginedUser = async (req, res, next) => {
+  try {
+    const { userId } = req.user;
+    const user = await UserService.findSignedUser(userId);
+
+    return res.status(200).json({ data: user });
+  } catch (err) {
+    next(err);
+  }
+};
