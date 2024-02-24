@@ -23,8 +23,8 @@ model Users {
   intro      String?   @map("intro")
   emailTokens String? @map("emailTokens")
   profile_image String? @map("profile_image")
-  age           Int @map("age")
-  gender        Gender @map("gender")
+  age           Int? @map("age")
+  gender        Gender? @map("gender")
   user_status User_Status @default(nonpass)
   reviews Reviews[]
   pets Pets[]
