@@ -16,7 +16,7 @@ findUserByEmail = async (req, res, next) => {
   }
 };
 
-// 로그인한 유저
+// 로그인한 유저 프로필 조회
 getLoginedUser = async (req, res, next) => {
   try {
     const { userId } = req.user;

@@ -11,4 +11,8 @@ const userRepository = new UserRepository(prisma, redisClient);
 const userService = new UserService(userRepository);
 const userController = new UserController(userService);
 
+// 유저 상세 조회 API
 router.get("/users", userController.findUserByEmail);
+
+// 로그인한 유저 프로필 조회 API
+router.get("/user/:userId", userController.getLoginedUser);
