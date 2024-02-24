@@ -57,7 +57,7 @@ const uploadUserImage = async (req, res, next) => {
 const uploadPetImage = async (req, res, next) => {
     //업로드 함수를 정의
     return new Promise((resolve, reject) => {
-      multerUpload.single("profileImage")(req, res, async (error) => {
+      multerUpload.single("profile_Image")(req, res, async (error) => {
         // 멀터.싱글을 요청해서 파일을 가져오고
         if (error) {
           reject(res.status(500).json({ message: error.message }));

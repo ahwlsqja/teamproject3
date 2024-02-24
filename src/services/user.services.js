@@ -98,7 +98,7 @@ export class UsersService {
 
     // 유저 상세 조회
     findUserByEmail = async (email) => {
-        const user = await this.userRepository.findUserByEmail(email);
+        const user = await this.usersRepository.findUserByEmail(email);
   
     return {
       userId: user.userId,
@@ -116,7 +116,6 @@ export class UsersService {
       },
     };
   };
-
 }
 
 

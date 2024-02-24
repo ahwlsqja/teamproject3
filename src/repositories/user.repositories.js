@@ -14,6 +14,26 @@ export class UsersRepository {
         });
     }
 
+    getUserById = async (userId) => {
+        return await this.prisma.users.findMany({
+            where: { userId: +userId },
+            select: {
+                userId: true,
+                email: true,
+                createdAt: true,
+                updatedAt: true,
+                pets : {
+                    select : {
+                        name: true,
+                        petId: true,
+                        petType: true,
+                        age: true,
+                    }
+                }
+            }
+        })
+    }
+
     createUser = async (email, hashedPassword, name, phone_number, intro, age, gender) => {
         const imageUrl = req.file.Location;
         const token = Math.floor(Math.random() * 900000) + 100000;
@@ -37,7 +57,8 @@ export class UsersRepository {
             return [ user ]
         },{
             isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted
-        });  
+        });
+    }  
         
         
 
@@ -65,8 +86,4 @@ export class UsersRepository {
             })
         })    
     }
-
-        
     }
-
-}

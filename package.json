@@ -41,10 +41,12 @@
     "os": "^0.1.2",
     "passport": "^0.7.0",
     "passport-kakao": "^1.0.1",
+    "path": "^0.12.7",
     "prisma": "^5.8.1",
     "redis": "^4.6.13",
     "supertest": "^6.3.4",
     "typeorm": "^0.3.20",
+    "url": "^0.11.3",
     "winston": "^3.11.0"
   },
   "devDependencies": {
