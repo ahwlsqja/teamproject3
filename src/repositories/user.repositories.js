@@ -1,5 +1,5 @@
 import { emailVerificationMiddleware } from "../middlewares/emailVerification.middleware.js";
-import { toKenKey } from "../redis/keys.js"
+import { tokenKey } from "../redis/keys.js"
 import { Prisma  } from "@prisma/client";
 
 export class UsersRepository {
@@ -47,11 +47,22 @@ export class UsersRepository {
         });
     }
 
-    
+    saveToken = async (userId, refreshToken) => {
+        return this.redisClient.hSet(tokenKey(userId), "token", refreshToken);
+    };
 
 
-
-
+    getToken = async (userId) => {
+        return new Promise((resolve, reject) => {
+            this.redisClient.hGet(tokenKey(userId), 'token', (err, data) => {
+                if(err){
+                    reject(err);
+                } else {
+                    resolve(data);
+                }
+            })
+        })    
+    }
 
 
 

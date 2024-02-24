@@ -63,7 +63,33 @@ export class UsersService {
         }
         // token만들어줌 
         const token = jwt.sign({ userId: user.userId },process.env.JWT_SECRET, { expiresIn: '12h'});
+        const refreshToken = jwt.sign({ userId: user.userId }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
 
+        await this.usersRepository.saveToken(user.userId, refreshToken);
+
+        return { token, refreshToken };
+
+    }
+    refreshToken = async (refreshToken) => {
+        if(!refreshToken){
+            throw new Error('리프레쉬 토큰이 없습니다.');
+        }
+        try{
+            // userId 뱉음 jwt.verify가
+            const { userId } = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+            const savedRefreshToken = await this.usersRepository.getToken(userId);
+            if(refreshToken !== savedRefreshToken){
+                throw new Error("리프레쉬 토큰이 유효하지 않습니다.")
+            };
+            
+            const newToken = jwt.sign({ userId : userId }, process.env.JWT_SECRET, { expiresIn: '12h'});
+            const newRefreshToken = jwt.sign({ userId: userId }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d'})
+            await this.usersRepository.saveToken(userId, newRefreshToken);
+
+            return { newToken, newRefreshToken };
+        } catch(err) {
+            throw new Error('리프레시 토큰이 유효하지 않습니다.');
+        }
     }
 
 
