@@ -8,6 +8,7 @@ export class ReservationsRepository {
         return await this.prisma.reservations.findMany({
             where: {
                 sitterId: sitterId,
+                status: 'ACCEPTED',
                 startDay: {
                     lt: lastDay, // 여기서 lt는 Less Than 의 약자로 이 필드의 값이 지정한 값보다 작거나 같은 데이터를 말함
                 },
@@ -19,6 +20,7 @@ export class ReservationsRepository {
         });
     }
 
+
     findReservationsByPetAndDate = async (petId, startDay, lastDay) => {
         return await this.prisma.reservations.findMany({
             where: {
@@ -27,6 +29,7 @@ export class ReservationsRepository {
                         petId: petId,
                     },
                 },
+                status: 'ACCEPTED',
                 startDay: {
                     lt: lastDay,
                 },

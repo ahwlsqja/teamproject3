@@ -32,7 +32,7 @@ export class UsersService {
 
 
     // 회원가입 이메일 인증
-    verifySighUp = async ( email, verifiedusertoken ) => {
+    verifySignUp = async ( email, verifiedusertoken ) => {
         await new Promise((resolve) => setTimeout(resolve, 2000));
         const user = await this.usersRepository.findUserByEmail(email);
         if(!user.email_verified){

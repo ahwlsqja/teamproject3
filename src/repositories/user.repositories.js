@@ -48,7 +48,7 @@ export class UsersRepository {
                     age,
                     gender,
                     user_status: "nonpass",
-                    emailTokens: token.toString(),
+                    email_verified: token.toString(),
                     profile_image: imageUrl,
                 }
             });
@@ -86,4 +86,4 @@ export class UsersRepository {
             })
         })    
     }
-    }
+}

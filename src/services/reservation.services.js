@@ -9,10 +9,9 @@ export class ReservationsService {
         if (!user) {
             throw new Error('User not found');
         }
-    
+        
         const existingReservations = await reservationsRepository.findReservationsBySitterAndDate(sitterId, startDay, lastDay);
-    
-        if (existingReservations.length > 0) {
+        if (existingReservations.length > 0 ) {
             throw new Error('해당날짜는 불가능합니다.');
         }
 
