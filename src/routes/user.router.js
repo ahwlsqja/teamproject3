@@ -17,3 +17,6 @@ const userscontroller = new Userscontroller(usersService);
 
 
 router.get('/user_info', authMiddleware ,userscontroller.getUser)
+
+
+export default router

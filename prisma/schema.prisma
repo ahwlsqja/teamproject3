@@ -44,26 +44,19 @@ enum Gender {
 
 model Reviews {
   reviewid  Int      @id @default(autoincrement()) @map("reviewid")
-  sitterid  Int      @map("sitterid")
+  sitterId  Int      @map("sitterId")
   userId    Int      @map("userId")
   title     String   @map("title")
   content   String   @map("content") @db.Text
   createdAt DateTime @default(now()) @map("createdAt")
   updatedAt DateTime @updatedAt @map("updatedAt")
-  status    Status   @default(APPLY)
   user      Users    @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  sitter    Sitters  @relation(fields: [sitterId], references: [sitterId], onDelete: Cascade)
 
   @@map("Reviews")
 }
 
-enum Status {
-  APPLY
-  DROP
-  PASS
-  INTERVIEW1
-  INTERVIEW2
-  FINAL_PASS
-}
+
 
 model Sitters {
   sitterId       Int            @id @default(autoincrement()) @map("sitterId")
@@ -83,6 +76,8 @@ model Sitters {
   local          String         @map("local")
   ablepettype    Ablepettype    @map("ablepettype")
   reservations   Reservations[]
+  reviews Reviews[]
+
 
   @@map("Sitters")
 }
