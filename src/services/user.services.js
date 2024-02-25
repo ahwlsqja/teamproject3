@@ -14,7 +14,7 @@ export class UsersService {
         await new Promise((resolve) => setTimeout(resolve, 2000));
 
         const isExistUser = await this.usersRepository.findUserByEmail(email);
-        if(!isExistUser){
+        if(isExistUser){
             throw new Error('이미 있는 이메일입니다.');
         }
 

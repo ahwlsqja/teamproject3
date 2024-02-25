@@ -61,4 +61,56 @@ export class ReservationsRepository {
 
         return reservation;
     }
+
+    // 예약 조회
+    getReservationById = async (reservationId) => {
+        return await this.prisma.reservations.findUnique({
+            where: {
+                Id: reservationId
+            }
+        })
+    }
+
+
+    // 예약 삭제
+    deleteReservation = async (reservationId) => {
+        return await this.prisma.reservations.delete({
+            where: {
+                Id: reservationId
+            }
+        })
+    }
+
+    // 예약 수정 
+    updateReservation = async (reservationId, petIds, startDay, lastDay) => {
+        const updatedReservation = await this.prisma.reservations.update({
+            where: {
+                Id: reservationId
+            },
+            data: {
+                startDay: startDay,
+                lastDay : lastDay,
+            },
+        });
+
+        await this.prisma.reservationPet.deleteMany({
+            where: {
+                reservationId: reservationId,
+            }
+        });
+
+        for(const petId of petIds){
+            await this.prisma.reservationPet.create({
+                data: {
+                    petId: petId,
+                    reservationId: reservationId,
+                }
+            });
+        }
+
+        return updatedReservation;
+    }
+
+
+
 }
