@@ -1,5 +1,5 @@
 import { emailVerificationMiddleware } from "../middlewares/emailVerification.middleware.js";
-import { toKenKey } from "../redis/keys.js"
+import { tokenKey } from "../redis/keys.js"
 import { Prisma  } from "@prisma/client";
 
 export class UsersRepository {
@@ -14,9 +14,30 @@ export class UsersRepository {
         });
     }
 
-    createUser = async (email, hashedPassword, name, phone_number, intro, age, profile_image, gender) => {
+    getUserById = async (userId) => {
+        return await this.prisma.users.findMany({
+            where: { userId: +userId },
+            select: {
+                userId: true,
+                email: true,
+                createdAt: true,
+                updatedAt: true,
+                pets : {
+                    select : {
+                        name: true,
+                        petId: true,
+                        petType: true,
+                        age: true,
+                    }
+                }
+            }
+        })
+    }
+
+    createUser = async (email, hashedPassword, name, phone_number, intro, age, gender) => {
+        const imageUrl = req.file.Location;
         const token = Math.floor(Math.random() * 900000) + 100000;
-        const user = await this.prisma.$transaction(async(tx) => {
+        const [user] = await this.prisma.$transaction(async(tx) => {
             const user = await tx.users.create({
                 data: {
                     email,
@@ -27,15 +48,17 @@ export class UsersRepository {
                     age,
                     gender,
                     user_status: "nonpass",
-                    emailTokens: token.toString(),
+                    email_verified: token.toString(),
+                    profile_image: imageUrl,
                 }
             });
 
             await emailVerificationMiddleware(email, token);
-            return user
+            return [ user ]
         },{
             isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted
-        });  
+        });
+    }  
         
         
 
@@ -47,28 +70,20 @@ export class UsersRepository {
         });
     }
 
-    
+    saveToken = async (userId, refreshToken) => {
+        return this.redisClient.hSet(tokenKey(userId), "token", refreshToken);
+    };
 
 
-
-
-
-
-
+    getToken = async (userId) => {
+        return new Promise((resolve, reject) => {
+            this.redisClient.hGet(tokenKey(userId), 'token', (err, data) => {
+                if(err){
+                    reject(err);
+                } else {
+                    resolve(data);
+                }
+            })
+        })    
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
