@@ -111,4 +111,27 @@ export class ReservationsService {
         return updatedReservation;
     }
 
+    // 예약 목록 조회(유저 입장 펫들의 예약 목록 들고옴)
+    findReservationsByUser = async (userId) => {
+        const isExistUser = await this.usersRepository.findUserByUserId(userId)
+
+        if(!isExistUser){
+            throw new Error("해당 유저가 없습니다.");
+        }
+
+        const foundReservationsByUser = await this.reservationsRepository.findReservationsByUser(userId);
+        return foundReservationsByUser
+    }
+
+
+
+    // 예약 목록 조회(시터 입장에서)
+    findReservationsBySitter = async(sitterId) => {
+        // 유효성 검사 필요함 sitter 코드 들어오면 할게여
+        const findReservationsBySitter = await this.reservationsRepository.findReservationsBySitter(sitterId)
+        return findReservationsBySitter
+    }
+
+
+
 }

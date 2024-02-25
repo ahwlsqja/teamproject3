@@ -45,4 +45,27 @@ export class ReservationsController {
             next(error)
         }
     }
+
+    // 유저 펫 예약 목록 조회
+    findReservationsByUser = async (userId) => {
+        const { userId } = req.user;
+        try{
+            const reservationofUser = await this.reservationsService.findReservationsByUser(userId);
+            return res.status(200).json({ data: reservationofUser })
+        }catch(error){
+            next(error);
+        }
+    }
+
+    // 시터아이디 예약 목록 조회
+    findReservationsBySitter = async (sitterId) => {
+        const { sitterId } = req.sitter;
+        try{
+            const reservationofSitter = await this.reservationsService.findReservationsBySitter(sitterId);
+            return res.status(200).json({ data: reservationofSitter })
+        }catch(error)
+        {
+            next(error)
+        }
+    }
 }

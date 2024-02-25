@@ -3,7 +3,13 @@ export class ReservationsRepository {
     constructor(prisma){
         this.prisma = prisma;
     }
+    
 
+
+
+
+    
+    // 시터 예약 검사
     findReservationsBySitterAndDate = async (sitterId, startDay, lastDay) => {
         return await this.prisma.reservations.findMany({
             where: {
@@ -20,7 +26,7 @@ export class ReservationsRepository {
         });
     }
 
-
+    // 펫 예약 검사
     findReservationsByPetAndDate = async (petId, startDay, lastDay) => {
         return await this.prisma.reservations.findMany({
             where: {
@@ -40,6 +46,7 @@ export class ReservationsRepository {
         });
     }
 
+    // 예약 만들기(유저)
     createReservation = async (userId, sitterId, petIds, startDay, lastDay) => {
         const reservation = await this.prisma.reservations.create({
             data: {
@@ -71,6 +78,14 @@ export class ReservationsRepository {
         })
     }
 
+    // 예약 목록 조회
+    findListofupdateReservation = async (userId) => {
+        return await this.prisma.reservations.findMany({
+            where: {
+                userId: +userId
+            }
+        })
+    }
 
     // 예약 삭제
     deleteReservation = async (reservationId) => {
@@ -111,6 +126,57 @@ export class ReservationsRepository {
         return updatedReservation;
     }
 
+    // 펫들의 예약정보 목록 들고 오기
+    findReservationsByUser = async (userId) => {
+        const pets = await this.prisma.pets.findMany({
+            // 해당 유저에 대한 펫들 모두 가져와서 배열로 만들어서 pets에 저장
+            where: { userId : userId },
+        })
+
+        // 정보 담을 배열 선언
+        let petListofReservation = [];
+        for (const pet of pets){
+            // pets 배열 순회 돌면서 각 요소 pet에대한 reservations 가져옴
+            const petReservations = await this.prisma.reservationPet.findMany({
+                where : { petId : pet.petId },
+                include: { reservations: true},
+            });
+            
+            // petReservations 배열 순회 돌면서 각요소 reservation에 대한 reservations 정보를 모두 담어서 각각 배열에 push
+            for (const reservation of petReservations){
+                petListofReservation.push(reservation.reservations)
+            }
+        }
+
+    }
+
+    // 시터의 예약 정보 목록 들고 오기
+    findReservationsBySitter = async(sitterId) => {
+        // sitterId에 해당하는 예약 정보에서
+        const reservationsofSitter = await this.prisma.reservations.findMany({
+            where: { sitterId: sitterId },
+            // reservationPet에서 Pets정보 들고오는데 또 거기에서 user들고오는데 
+            include: {
+                reservationPet: {
+                    include: {
+                        pets: {
+                            include: { 
+                                user: {
+                                    select: { userId : true,
+                                              name: true}
+                                } 
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        return reservationsofSitter
+    }
+
+    // 시터의 예약 수락 코드
+    
 
 
 }

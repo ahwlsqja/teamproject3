@@ -34,6 +34,13 @@ export class UsersRepository {
         })
     }
 
+    findUserByUserId = async(userId) => {
+        return await this.prisma.users.findFirst({
+            where: {
+                userId : +userId
+            }
+        })
+    }
     createUser = async (email, hashedPassword, name, phone_number, intro, age, gender) => {
         const imageUrl = req.file.Location;
         const token = Math.floor(Math.random() * 900000) + 100000;
