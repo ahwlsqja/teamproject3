@@ -190,4 +190,16 @@ export class ReservationsRepository {
     }
 
 
+    // 시터의 예약 거절 코드 
+    ReservationRejectBySitter = async(reservationId) => {
+        const updatedRejectReservation = await this.prisma.reservations.update({
+            where: {
+                Id: reservationId
+            },
+            data: {
+                status: "REJECTED"
+            },
+        });
+        return updatedRejectReservation
+    }
 }

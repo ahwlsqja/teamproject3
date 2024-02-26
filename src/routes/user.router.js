@@ -14,8 +14,20 @@ const usersRepository = new UsersRepository(prisma, redisClient);
 const usersService = new UsersService(usersRepository);
 const userscontroller = new Userscontroller(usersService);
 
+// 회원가입 API
+router.post('/user-sign-up', userscontroller.signUp)
+
+// 이메일 인증 API
+router.put('/user-sign-up-verify', userscontroller.verifySignUp)
+
+// 로그인 API
+router.post('/user-sign-in', userscontroller.signIn)
+
+// 자동로그인 API(리프래시 토큰)
+router.get('/user-refresh', userscontroller.refreshToken)
 
 
+// 유저 조회 API
 router.get('/user_info', authMiddleware ,userscontroller.getUser)
 
 

@@ -44,19 +44,26 @@ enum Gender {
 
 model Reviews {
   reviewid  Int      @id @default(autoincrement()) @map("reviewid")
-  sitterId  Int      @map("sitterId")
+  sitterid  Int      @map("sitterid")
   userId    Int      @map("userId")
   title     String   @map("title")
   content   String   @map("content") @db.Text
   createdAt DateTime @default(now()) @map("createdAt")
   updatedAt DateTime @updatedAt @map("updatedAt")
+  status    Status   @default(APPLY)
   user      Users    @relation(fields: [userId], references: [userId], onDelete: Cascade)
-  sitter    Sitters  @relation(fields: [sitterId], references: [sitterId], onDelete: Cascade)
 
   @@map("Reviews")
 }
 
-
+enum Status {
+  APPLY
+  DROP
+  PASS
+  INTERVIEW1
+  INTERVIEW2
+  FINAL_PASS
+}
 
 model Sitters {
   sitterId       Int            @id @default(autoincrement()) @map("sitterId")
@@ -69,15 +76,13 @@ model Sitters {
   createdAt      DateTime       @default(now()) @map("createdAt")
   updatedAt      DateTime       @updatedAt @map("updatedAt")
   career        Int            @map("career")
-  sitter_Status  Sitter_Status  @default(nonpass) @map("Sitter_Status") 
+  sitter_Status  Sitter_Status  @default(nonpass)     
   intro          String?        @map("intro")
   age            Int?           @map("age")
   gender         Int?           @map("gender")
-  adrress_Sitter Adrress_Sitters  @map("Adrress_Sitters")
+  local          String         @map("local")
   ablepettype    Ablepettype    @map("ablepettype")
   reservations   Reservations[]
-  reviews Reviews[]
-
 
   @@map("Sitters")
 }
@@ -87,23 +92,10 @@ enum Sitter_Status {
   nonpass
 }
 
-enum Adrress_Sitters {
-  seoul
-  gyeonggi
-  Gangwon
-  Chungbuk
-  Chungnam
-  jeonbuk
-  Jeonnam
-  Gyeongbuk
-  Gyeongnam
-  Jeju
-}
 
 enum Ablepettype {
-  DOG
-  CAT
-  Others
+  dog
+  cat
 }
 
 model Reservations {
@@ -125,8 +117,9 @@ enum TASKSTATUS {
 }
 
 model ReservationPet {
-  petId            Int  
-  Id               Int          @unique
+  reservationPetId Int          @id @default(autoincrement())
+  petId            Int
+  Id               Int
   reservations     Reservations @relation(fields: [Id], references: [Id], onDelete: Cascade)
   pets             Pets         @relation(fields: [petId], references: [petId], onDelete: Cascade)
 }

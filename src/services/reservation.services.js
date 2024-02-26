@@ -148,7 +148,7 @@ export class ReservationsService {
         // 겹치는 날짜중에 ACCEPTED면 상태면 안되고 그외는 할 수 있게
         const existingReservations = await this.reservationsRepository.findReservationsBySitterAndDate(sitterId, reservation.startDay, reservation.lastDay)
         if(existingReservations[0]){
-          throw new Error("예약할수 없습니다.")
+          throw new Error("이미 수락된 상태입니다. 예약할수 없습니다.")
         }
 
         if(reservation.status !== "ACCEPTED"){
@@ -158,5 +158,25 @@ export class ReservationsService {
             throw new Error("이미 수락하셨습니다.");
         }
 
+    }
+
+    // 시터의 예약 거절 코드
+    ReservationRejectBySitter = async(sitterId, reservationId) => {
+        // 유효성 검사 필요함 sitter 코드 들어오면 할게여
+        const reservation = await this.reservationsRepository.getReservationById(reservationId);
+        if(!reservation) {
+            throw new Error("예약이 존재하지 않습니다.");
+        } 
+        // 예약에 기록된 시터와 현재 시터가 일치하지 않을 경우 에러 처리
+
+        if(reservation.sitterId !== sitterId){
+            throw new Error("시터 정보가 일치하지 않습니다.")
+        }
+
+        if(reservation.status === "REJECTED"){
+            throw new Error("이미 거절된 예약 입니다.")
+        }
+        const updatedReservation = await this.reservationsRepository.ReservationRejectBySitter(reservationId);
+        return updatedReservation
     }
 }
