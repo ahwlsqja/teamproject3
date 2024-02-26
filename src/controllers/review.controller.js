@@ -1,31 +1,34 @@
-import { ReviewsService } from '../services/review.services.js';
+import { ReviewsService } from "../services/review.services.js";
 export class ReviewsController {
-    constructor(reviewsService){
-        this.reviewsService = reviewsService;
-    }
+  constructor(reviewsService) {
+    this.reviewsService = reviewsService;
+  }
 
   // 댓글 생성
   createReview = async (req, res, next) => {
     try {
       const { userId } = req.user;
       const { sitterId } = req.params;
-      const { password, title, content } = req.body;
+      const { password, title, content, star } = req.body;
 
-      if(!userId || !title || !content || !password || !sitterId){
-        return res.status(400).json({ message : "모든 입력칸을 입력해주세요. "});
+      if (!userId || !title || !content || !password || !sitterId || !star) {
+        return res
+          .status(400)
+          .json({ message: "모든 입력칸을 입력해주세요. " });
       }
 
       const createdReview = await this.reviewsService.createReview(
-        userId, 
-        title, 
-        content, 
-        password, 
-        sitterId
+        userId,
+        title,
+        content,
+        password,
+        sitterId,
+        star
       );
 
       return res.status(201).json({
         data: createdReview,
-        message: '댓글이 생성되었습니다.',
+        message: "댓글이 생성되었습니다.",
       });
     } catch (err) {
       next(err);
@@ -36,25 +39,28 @@ export class ReviewsController {
   updateReview = async (req, res, next) => {
     try {
       const { reviewId } = req.params;
-      const { password, title, content, sitterId } = req.body;
+      const { password, title, content, sitterId, star } = req.body;
       const { userId } = req.user;
 
-      if(!title || !content || !password || !sitterId){
-        return res.status(400).json({ message : "모든 입력칸을 입력해주세요. "});
+      if (!title || !content || !password || !sitterId || !star) {
+        return res
+          .status(400)
+          .json({ message: "모든 입력칸을 입력해주세요. " });
       }
 
       const updatedReview = await this.reviewsService.updateReview(
-        reviewId, 
-        password, 
-        title, 
-        content, 
-        sitterId, 
-        userId
+        reviewId,
+        password,
+        title,
+        content,
+        sitterId,
+        userId,
+        star
       );
 
       return res.status(200).json({
         data: updatedReview,
-        message: '댓글이 수정되었습니다.',
+        message: "댓글이 수정되었습니다.",
       });
     } catch (err) {
       next(err);
@@ -68,11 +74,17 @@ export class ReviewsController {
       const { userId } = req.user;
       const { password } = req.body;
 
-      if(!password){
-        return res.status(400).json({ message : "모든 입력칸을 입력해주세요. "});
+      if (!password) {
+        return res
+          .status(400)
+          .json({ message: "모든 입력칸을 입력해주세요. " });
       }
 
-      const deletedReview = await this.reviewsService.deleteReview(reviewId, userId, password);
+      const deletedReview = await this.reviewsService.deleteReview(
+        reviewId,
+        userId,
+        password
+      );
 
       return res.status(200).json({ data: deletedReview });
     } catch (err) {
