@@ -6,14 +6,14 @@ export class PetRepository {
   }
 
   // 펫 등록하기
-  createPet = async ({ userId, name, petType, age, petImage }) => {
+  createPet = async ({ userId, name, petType, age, pet_Image }) => {
     const createdPet = await this.prisma.pets.create({
       data: {
         userId,
         name,
         petType,
         age,
-        petImage,
+        pet_Image,
       },
     });
     return createdPet;
@@ -39,7 +39,7 @@ export class PetRepository {
         name: true,
         petType: true,
         age: true,
-        petImage: true,
+        pet_Image: true,
       },
     });
     return findUserPets;
@@ -47,14 +47,14 @@ export class PetRepository {
 
   // 펫 정보 수정하기
   // email, password 정보로 찾으려 했는데 생각이 안남.
-  updatePetInfo = async (userId, petId, name, petType, age, petImage) => {
+  updatePetInfo = async (userId, petId, name, petType, age, pet_Image) => {
     const updatedPetInfo = await this.prisma.pets.update({
       where: { userId: +userId, petId: +petId },
       data: {
         name,
         petType,
         age,
-        petImage,
+        pet_Image,
       },
     });
     return updatedPetInfo;
@@ -92,6 +92,14 @@ getUserById = async (userId) => {
   return await this.prisma.users.findFirst({
     where: {
       userId: +userId,
+    },
+  });
+};
+
+findPetByPetType = async (petType) => {
+  return await this.prisma.pets.findMany({
+    where: {
+      petType: petType,
     },
   });
 };

@@ -7,17 +7,17 @@ export class PetController {
   createPet = async (req, res, next) => {
     try {
       const userId = res.locals.userId;
-      const { name, petType, age, petImage } = req.body;
+      const { name, petType, age, pet_Image } = req.body;
       const createdPet = await this.petService.createPet({
         userId,
         name,
         petType,
-        petImage,
+        pet_Image,
         age,
       });
       return res.status(201).json({ data: createdPet });
-    } catch (error) {
-      next(error);
+    } catch (err) {
+      next(err);
     }
   };
 
@@ -53,7 +53,7 @@ export class PetController {
     try {
       const { userId } = req.user.userId;
       const { petId } = req.params;
-      const { name, petType, age, petImage } = req.body;
+      const { name, petType, age, pet_Image } = req.body;
 
       const updatePetInfo = await this.petService.updatePetInfo(
         userId,
@@ -61,7 +61,7 @@ export class PetController {
         name,
         petType,
         age,
-        petImage
+        pet_Image
       );
 
       return res.status(200).json({ data: updatePetInfo });
@@ -82,12 +82,21 @@ export class PetController {
         email,
         password
       );
-      return res
-        .status(200)
-        .json({
-          message: "반려동물 정보가 삭제되었습니다.",
-          data: deletedPetInfo,
-        });
+      return res.status(200).json({
+        message: "반려동물 정보가 삭제되었습니다.",
+        data: deletedPetInfo,
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  // 종류별 펫 찾기
+  findPetByPetType = async (req, res, next) => {
+    try {
+      const { petType } = req.body;
+      const petTypeInfo = await this.petService.findPetByPetType(petType);
+      return res.status(200).json({ data: petTypeInfo });
     } catch (err) {
       next(err);
     }

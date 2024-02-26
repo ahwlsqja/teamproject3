@@ -7,7 +7,7 @@ export class PetService {
   }
 
   // 펫 등록하기
-  createPet = async ({ userId, name, petType, age, petImage }) => {
+  createPet = async ({ userId, name, petType, age, pet_Image }) => {
     try {
       if (!name) {
         throw new Error("이름은 필수입니다.");
@@ -18,7 +18,7 @@ export class PetService {
       if (!age) {
         throw new Error("나이는 필수입니다.");
       }
-      if (!petImage) {
+      if (!pet_Image) {
         throw new Error("사진은 필수입니다.");
       }
       if (petType !== "DOG" && petType !== "CAT") {
@@ -30,11 +30,11 @@ export class PetService {
         name,
         petType,
         age,
-        petImage,
+        pet_Image,
       });
       return createdPet;
-    } catch (error) {
-      next(error);
+    } catch (err) {
+      next(err);
     }
   };
 
@@ -58,18 +58,18 @@ export class PetService {
 
   // 유저 1인의 모든펫 조회하기
   findUserPets = async (userId) => {
-    if (!userId) {
-      throw Error("유저 정보가 존재하지 않습니다.");
-    }
-
-    const userPets = await this.petRepository.findUserPets(userId);
     try {
+      if (!userId) {
+        throw Error("유저 정보가 존재하지 않습니다.");
+      }
+
+      const userPets = await this.petRepository.findUserPets(userId);
       return userPets.map((pet) => ({
         petId: pet.petId,
         name: pet.name,
         petType: pet.petType,
         age: pet.age,
-        petImage: pet.petImage,
+        pet_Image: pet.pet_Image,
       }));
     } catch (err) {
       next(err);
@@ -77,7 +77,7 @@ export class PetService {
   };
 
   // 펫 정보 수정하기
-  updatePetInfo = async (userId, petId, name, petType, age, petImage) => {
+  updatePetInfo = async (userId, petId, name, petType, age, pet_Image) => {
     try {
       const pet = await this.petRepository.pets.findOnePet(userId, petId); // 펫 한마리 찾기
       if (!pet) {
@@ -96,7 +96,7 @@ export class PetService {
         name,
         petType,
         age,
-        petImage
+        pet_Image
       );
 
       // 변경된 데이터를 조회함
@@ -110,7 +110,7 @@ export class PetService {
         name: updatePetInfo.name,
         petType: updatePetInfo.petType,
         age: updatePetInfo.age,
-        petImage: updatePetInfo.petImage,
+        pet_Image: updatePetInfo.petImage,
       };
     } catch (err) {
       next(err);
@@ -138,10 +138,27 @@ export class PetService {
           throw new Error("존재하지 않는 반려동물입니다.");
         }
 
-        return { pet };
+        return pet;
       } catch (err) {
         next(err);
       }
     };
+  };
+
+  // 종류별 펫 찾기
+  findPetByPetType = async (petType) => {
+    try {
+      const isExistPetType = await this.petRepository.findPetByPetType(petType);
+      if (
+        isExistPetType !== "DOG" &&
+        isExistPetType !== "CAT" &&
+        isExistPetType !== "Others"
+      ) {
+        throw new Error("해당 종류의 반려동물은 존재하지 않습니다.");
+      }
+      return isExistPetType;
+    } catch (err) {
+      next(err);
+    }
   };
 }
