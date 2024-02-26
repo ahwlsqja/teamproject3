@@ -41,12 +41,6 @@ export class PetService {
   // 펫 1마리 조회하기
   findOnePet = async (petId, userId) => {
     try {
-      if (!petId) {
-        throw new Error("petId를 입력해주세요.");
-      }
-      if (!userId) {
-        throw new Error("userId를 입력해주세요.");
-      }
       const isExistUser = await this.petRepository.getUserById(userId);
       if (!isExistUser) {
         throw new Error("존재하지 않는 유저입니다.");
@@ -92,6 +86,9 @@ export class PetService {
       if (!(userId || name || petType || age || petImage)) {
         throw new Error("필수 입력 정보를 입력해주세요.");
       }
+      if (petType !== "DOG" && petType !== "CAT" && petType !== "Others") {
+        throw new Error("종류는 개와 고양이 중 하나입니다.");
+      }
       // 저장소에 업데이트를 요청한다
       await this.petRepository.updatePetInfo(
         userId,
@@ -104,7 +101,9 @@ export class PetService {
 
       // 변경된 데이터를 조회함
       const updatePetInfo = await this.petRepository.findOnePet(userId, petId);
-
+      if (!updatePetInfo) {
+        throw new Error("존재하지 않는 반려동물입니다.");
+      }
       return {
         userId: updatePetInfo.userId,
         petId: updatePetInfo.petId,
@@ -124,6 +123,9 @@ export class PetService {
         if (email !== userEmail) {
           throw new Error("이메일이 일치하지 않습니다.");
         }
+        if (!userEmail) {
+          throw new Error("존재하지 않는 이메일입니다.");
+        }
 
         const userPassword = await this.petRepository.getUserPassword(userId);
         if (password !== userPassword) {
@@ -131,19 +133,12 @@ export class PetService {
         }
 
         // 저장소에서 찾을 펫
-        const pet = await this.petRepository.findOnePet(userId, petId);
+        const pet = await this.petRepository.deletePetInfo(userId, petId);
         if (!pet) {
           throw new Error("존재하지 않는 반려동물입니다.");
         }
 
-        return {
-          petId: pet.petId,
-          name: pet.name,
-          userId: pet.userId,
-          petType: pet.petType,
-          age: pet.age,
-          pet_image: pet.pet_image,
-        };
+        return { pet };
       } catch (err) {
         next(err);
       }

@@ -51,7 +51,7 @@ export class PetController {
   // 펫 정보 수정하기
   updatePetInfo = async (req, res, next) => {
     try {
-      const { userId } = req.user;
+      const { userId } = req.user.userId;
       const { petId } = req.params;
       const { name, petType, age, petImage } = req.body;
 
@@ -73,7 +73,7 @@ export class PetController {
   // 펫 정보 삭제하기
   deletePetInfo = async (req, res, next) => {
     try {
-      const { userId } = req.user;
+      const { userId } = req.user.userId;
       const { petId } = req.params;
       const { email, password } = req.body;
       const deletedPetInfo = await this.petService.deletePetInfo(
@@ -82,7 +82,12 @@ export class PetController {
         email,
         password
       );
-      return res.status(200).json({ data: deletedPetInfo });
+      return res
+        .status(200)
+        .json({
+          message: "반려동물 정보가 삭제되었습니다.",
+          data: deletedPetInfo,
+        });
     } catch (err) {
       next(err);
     }

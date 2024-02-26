@@ -34,6 +34,13 @@ export class PetRepository {
   findUserPets = async (userId) => {
     const findUserPets = await this.prisma.pets.findMany({
       where: { userId: +userId },
+      select: {
+        petId: true,
+        name: true,
+        petType: true,
+        age: true,
+        petImage: true,
+      },
     });
     return findUserPets;
   };
@@ -64,6 +71,7 @@ export class PetRepository {
   getUserPassword = async (userId) => {
     const userPassword = await this.prisma.users.findFirst({
       where: { userId: +userId },
+      select: { password: true },
     });
     return userPassword;
   };
