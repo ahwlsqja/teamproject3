@@ -13,5 +13,9 @@ const petController = new PetController(petService);
 const router = express.Router();
 
 router.post("/pet", petController.createPet);
+router.get("/pet/:petId", petController.findOnePet);
+router.get("/user/:userId", petController.findUserPets);
+router.put("/pet/:petId", petController.updatePetInfo);
+router.delete("/pet/:petId", petController.deletePetInfo);
 
 export default router;
