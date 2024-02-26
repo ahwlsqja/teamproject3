@@ -6,7 +6,7 @@ export class ReviewsService {
     }
 
   // 댓글 생성
-  createReview = async (userId, title, content, password, sitterId) => {
+  createReview = async (userId, title, content, password, sitterId, star) => {
     const isExistUser = await this.reviewsRepository.findUserById(userId);
     const isExistSitter = await this.reviewsRepository.findSitterById(sitterId);
 
@@ -22,13 +22,14 @@ export class ReviewsService {
       userId,
       title,
       content,
+      star,
     );
 
     return createdReview
   };
 
   // 댓글 수정
-  updateReview = async (reviewId, password, title, content, sitterId, userId) => {
+  updateReview = async (reviewId, password, title, content, userId, star) => {
     const isExistUser = await this.reviewsRepository.findUserById(userId);
     const Review = await this.reviewsRepository.findReviewById(reviewId);
 
@@ -39,10 +40,13 @@ export class ReviewsService {
     if (!Review) {
         throw new Error('존재하지 않는 댓글입니다.');
     }
+    
+    if(!(1 <= star <= 5)){
+      throw new error("평점은 1~5점 사이에서만 작성이 가능합니다.");
+    }
 
 
-
-    const updatedReview = await this.reviewsRepository.updateReview(reviewId, title, content, sitterId);
+    const updatedReview = await this.reviewsRepository.updateReview(reviewId, title, content, star);
 
     return updatedReview
   }

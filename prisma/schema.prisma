@@ -43,27 +43,20 @@ enum Gender {
 }
 
 model Reviews {
-  reviewid  Int      @id @default(autoincrement()) @map("reviewid")
-  sitterid  Int      @map("sitterid")
+  reviewId  Int      @id @default(autoincrement()) @map("reviewId")
+  sitterId  Int      @map("sitterId")
   userId    Int      @map("userId")
   title     String   @map("title")
   content   String   @map("content") @db.Text
   createdAt DateTime @default(now()) @map("createdAt")
   updatedAt DateTime @updatedAt @map("updatedAt")
-  status    Status   @default(APPLY)
+  star      Int      @map("start")
+  sitter    Sitters  @relation(fields: [sitterId], references: [sitterId], onDelete: Cascade)
   user      Users    @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   @@map("Reviews")
 }
 
-enum Status {
-  APPLY
-  DROP
-  PASS
-  INTERVIEW1
-  INTERVIEW2
-  FINAL_PASS
-}
 
 model Sitters {
   sitterId       Int            @id @default(autoincrement()) @map("sitterId")
@@ -80,12 +73,26 @@ model Sitters {
   intro          String?        @map("intro")
   age            Int?           @map("age")
   gender         Int?           @map("gender")
-  local          String         @map("local")
+  adrress_Sitters          Adrress_Sitters         @map("Adrress_Sitters")
   ablepettype    Ablepettype    @map("ablepettype")
   reservations   Reservations[]
+  reviews        Reviews[]
 
   @@map("Sitters")
 }
+enum Adrress_Sitters {
+  seoul
+  gyeonggi
+  Gangwon
+  Chungbuk
+  Chungnam
+  jeonbuk
+  Jeonnam
+  Gyeongbuk
+  Gyeongnam
+  Jeju
+}
+
 
 enum Sitter_Status {
   pass
@@ -94,8 +101,9 @@ enum Sitter_Status {
 
 
 enum Ablepettype {
-  dog
-  cat
+  DOG
+  CAT
+  Others
 }
 
 model Reservations {
@@ -130,7 +138,7 @@ model Pets {
   userId         Int              @map("userId")
   petType        PETTYPE          @map("pettype")
   age            Int              @map("age")
-  pet_image      String           @map("pet_image")
+  pet_Image      String           @map("pet_Image")
   reservationPet ReservationPet[]
   user           Users            @relation(fields: [userId], references: [userId], onDelete: Cascade)
 }

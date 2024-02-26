@@ -9,9 +9,9 @@ export class ReviewsController {
     try {
       const { userId } = req.user;
       const { sitterId } = req.params;
-      const { password, title, content } = req.body;
+      const { password, title, content, star } = req.body;
 
-      if(!userId || !title || !content || !password || !sitterId){
+      if(!userId || !title || !content || !password || !sitterId || !star){
         return res.status(400).json({ message : "모든 입력칸을 입력해주세요. "});
       }
 
@@ -20,7 +20,8 @@ export class ReviewsController {
         title, 
         content, 
         password, 
-        sitterId
+        sitterId,
+        star,
       );
 
       return res.status(201).json({
@@ -36,10 +37,10 @@ export class ReviewsController {
   updateReview = async (req, res, next) => {
     try {
       const { reviewId } = req.params;
-      const { password, title, content, sitterId } = req.body;
+      const { password, title, content, star } = req.body;
       const { userId } = req.user;
 
-      if(!title || !content || !password || !sitterId){
+      if(!title || !content || !password || !star){
         return res.status(400).json({ message : "모든 입력칸을 입력해주세요. "});
       }
 
@@ -48,7 +49,7 @@ export class ReviewsController {
         password, 
         title, 
         content, 
-        sitterId, 
+        star, 
         userId
       );
 

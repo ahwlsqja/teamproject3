@@ -32,13 +32,14 @@ export class ReviewsRepository {
   }
   
   // 댓글 생성
-  createReview = async (userId, title, content, sitterId) => {
+  createReview = async (userId, title, content, sitterId, star) => {
     const createdReview = await prisma.reviews.create({
       data: {
         userId: +userId,
         sitterId: +sitterId,
         title,
         content,
+        star,
       },
     });
 
@@ -46,15 +47,15 @@ export class ReviewsRepository {
   };
 
   // 댓글 수정
-  updateReview = async (reviewid, title, content, sitterId) => {
+  updateReview = async (reviewid, title, content, star) => {
     const updatedReview = await prisma.reviews.update({
       where: {
         reviewid: Number(reviewid),
       },
       data: {
-        sitterId,
         title,
         content,
+        star,
       },
     });
 
