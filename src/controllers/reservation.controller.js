@@ -85,11 +85,5 @@ export class ReservationsController {
         }
     }
 
-
-
-
-
-
-
 }
 

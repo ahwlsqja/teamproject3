@@ -47,7 +47,7 @@ export class ReservationsRepository {
     }
 
     // 예약 만들기(유저)
-    createReservation = async (userId, sitterId, petIds, startDay, lastDay) => {
+    createReservation = async (sitterId, petIds, startDay, lastDay) => {
         const reservation = await this.prisma.reservations.create({
             data: {
                 sitterId: sitterId, // 예약을 받을 펫시터의 아이디

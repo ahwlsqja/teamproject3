@@ -125,9 +125,8 @@ enum TASKSTATUS {
 }
 
 model ReservationPet {
-  reservationPetId Int          @id @default(autoincrement())
-  petId            Int
-  Id               Int
+  petId            Int  
+  Id               Int          @unique
   reservations     Reservations @relation(fields: [Id], references: [Id], onDelete: Cascade)
   pets             Pets         @relation(fields: [petId], references: [petId], onDelete: Cascade)
 }
