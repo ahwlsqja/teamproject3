@@ -1,8 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { sendTodayData } from "../middlewares/slackBot.js"
 import "dotenv/config.js";
-import { uploadUserImage } from "../middlewares/image.middleware.js"
 
 export class UsersService {
     constructor(usersRepository){
@@ -10,7 +8,7 @@ export class UsersService {
     }
 
     // 회원가입
-    signUp = async (email, password, name, phone_number, intro, age, gender) => {
+    signUp = async (email, password, name, phone_number, intro, age, gender, imageUrl) => {
         await new Promise((resolve) => setTimeout(resolve, 2000));
 
         const isExistUser = await this.usersRepository.findUserByEmail(email);
@@ -18,6 +16,7 @@ export class UsersService {
             throw new Error('이미 있는 이메일입니다.');
         }
 
+        
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = await this.usersRepository.createUser(email, hashedPassword, name, phone_number, intro, age, gender);
         try{

@@ -1,7 +1,3 @@
-import { uploadPetImage } from "../middlewares/image.middleware"
-
-
-
 
 export class PetRepository {
   constructor(prisma) {
@@ -75,16 +71,16 @@ export class PetRepository {
     });
     return deletedPetInfo;
   };
+
+  // 펫 종류별로 끌어오기
+  findPetByPetType = async (petType) => {
+    return await this.prisma.pets.findMany({
+      where: {
+        petType: petType,
+      },
+   });
+
+
+
 }
-
-// 펫 종류별로 끌어오기
-findPetByPetType = async (petType) => {
-  return await this.prisma.pets.findMany({
-    where: {
-      petType: petType,
-    },
-  });
-
-
-
 }

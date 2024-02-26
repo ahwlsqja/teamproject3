@@ -1,4 +1,3 @@
-import { ReviewsService } from '../services/review.services.js';
 export class ReviewsController {
     constructor(reviewsService){
         this.reviewsService = reviewsService;
@@ -80,4 +79,23 @@ export class ReviewsController {
       next(err);
     }
   };
+
+  // 특정 시터 평점 평균
+  sitterExpert = async (req, res, next) => {
+    try{
+      const { sitterId } = req.params;
+
+      if(!sitterId){
+        return res.status(400).json({ message : "모든 입력칸을 입력해주세요. "});
+      }
+
+      const sitterExperted = await this.reviewsService.sitterExpert(sitterId);
+
+      return res.status(200).json({ data: sitterExperted });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+
 }

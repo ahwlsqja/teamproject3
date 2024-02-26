@@ -22,7 +22,7 @@ model Users {
   name      String   @map("name")
   intro      String?   @map("intro")
   emailTokens String? @map("emailTokens")
-  profile_image String? @map("profile_image")
+  profile_Image String? @map("profile_Image")
   age           Int? @map("age")
   gender        Gender @map("gender")
   user_status User_Status @default(nonpass)
@@ -37,9 +37,8 @@ enum User_Status {
 }
 
 enum Gender {
-  Man
-  Woman
-  Transgender
+  MALE
+  FEMALE
 }
 
 model Reviews {
@@ -50,7 +49,7 @@ model Reviews {
   content   String   @map("content") @db.Text
   createdAt DateTime @default(now()) @map("createdAt")
   updatedAt DateTime @updatedAt @map("updatedAt")
-  star      Int      @map("start")
+  star      Int      @map("star")
   sitter    Sitters  @relation(fields: [sitterId], references: [sitterId], onDelete: Cascade)
   user      Users    @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
@@ -62,9 +61,9 @@ model Sitters {
   sitterId       Int            @id @default(autoincrement()) @map("sitterId")
   email          String         @map("email")
   name           String         @map("name") @db.VarChar(50)
-  profile_image  String?        @map("profile_image")
+  profile_Image  String?        @map("profile_Image")
   email_verified Int            @map("email_verified")
-  phone_number   String         @map("phone_number")
+  phone_Number   String         @map("phone_Number")
   password       Int            @map("password")
   createdAt      DateTime       @default(now()) @map("createdAt")
   updatedAt      DateTime       @updatedAt @map("updatedAt")
@@ -74,7 +73,7 @@ model Sitters {
   age            Int?           @map("age")
   gender         Int?           @map("gender")
   adrress_Sitters          Adrress_Sitters         @map("Adrress_Sitters")
-  ablepettype    Ablepettype    @map("ablepettype")
+  ablePetType    Ablepettype    @map("ablepettype")
   reservations   Reservations[]
   reviews        Reviews[]
 
@@ -83,14 +82,14 @@ model Sitters {
 enum Adrress_Sitters {
   seoul
   gyeonggi
-  Gangwon
-  Chungbuk
-  Chungnam
+  gangwon
+  chungbuk
+  chungnam
   jeonbuk
-  Jeonnam
-  Gyeongbuk
-  Gyeongnam
-  Jeju
+  jeonnam
+  gyeongbuk
+  gyeongnam
+  jeju
 }
 
 
@@ -101,9 +100,9 @@ enum Sitter_Status {
 
 
 enum Ablepettype {
-  DOG
-  CAT
-  Others
+  dog
+  cat
+  others
 }
 
 model Reservations {
@@ -113,15 +112,15 @@ model Reservations {
   lastDay        DateTime
   createdAt      DateTime         @default(now())
   updatedAt      DateTime
-  status         TASKSTATUS       @default(ACCEPTED)
+  status         TASKSTATUS       @default(accepted)
   reservationPet ReservationPet[]
   sitters        Sitters          @relation(fields: [sitterId], references: [sitterId], onDelete: Cascade)
 }
 
 enum TASKSTATUS {
-  ACCEPTED
-  APPLYING
-  REJECTED
+  accepted
+  applying
+  regected
 }
 
 model ReservationPet {
@@ -144,7 +143,7 @@ model Pets {
 }
 
 enum PETTYPE {
-  DOG
-  CAT
-  Others
+  dog
+  cat
+  others
 }

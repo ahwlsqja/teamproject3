@@ -8,4 +8,21 @@ export class SittersRepository {
         this.prisma = prisma;
         this.redisClient = redisClient;
     }
+
+
+
+
+
+    // 아이디로 시터찾기
+  findSitterById = async(sitterId) => {
+    return await this.prisma.sitters.findFirst({
+        where: {
+            sitterId: +sitterId
+        }
+  })
+}
+
+ findManyBySitter = async() => {
+    return await this.prisma.sitters.findMany()
+ }
 }

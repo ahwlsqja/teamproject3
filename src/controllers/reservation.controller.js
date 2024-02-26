@@ -31,7 +31,7 @@ export class ReservationsController {
         }
     }
     // 예약 수정
-    updateReservation = async (reservationId, userId, petIds, startDay, lastDay) => {
+    updateReservation = async (req, res, next) => {
         const { userId } = req.user;
         const { reservationId } = req.params;
         const { petIds, startDay, lastDay } = req.body;
@@ -47,7 +47,7 @@ export class ReservationsController {
     }
 
     // 유저 펫 예약 목록 조회
-    findReservationsByUser = async (userId) => {
+    findReservationsByUser = async (req, res, next) => {
         const { userId } = req.user;
         try{
             const reservationofUser = await this.reservationsService.findReservationsByUser(userId);
@@ -58,7 +58,7 @@ export class ReservationsController {
     }
 
     // 시터아이디 예약 목록 조회
-    findReservationsBySitter = async (sitterId) => {
+    findReservationsBySitter = async (req, res, next) => {
         const { sitterId } = req.sitter;
         try{
             const reservationofSitter = await this.reservationsService.findReservationsBySitter(sitterId);
@@ -70,7 +70,7 @@ export class ReservationsController {
     }
 
     // 시터의 예약 수락 코드
-    ReservationAcceptBySitter = async(sitterId, reservationId) => {
+    ReservationAcceptBySitter = async(req, res, next) => {
         const { sitterId } = req.sitter;
         const { reservationId } = req.params;
         if(!reservationId) {
@@ -86,7 +86,7 @@ export class ReservationsController {
     }
 
     // 시터의 예약 거절 코드
-    ReservationRejectBySitter = async(sitterId, reservationId)=>{
+    ReservationRejectBySitter = async(req, res, next)=>{
         const { sitterId } = req.sitter;
         const { reservationId } = req.params;
         if(!reservationId) {

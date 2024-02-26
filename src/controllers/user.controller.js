@@ -7,6 +7,7 @@ export class Userscontroller {
     signUp = async(req, res, next) => {
         try{
             const { email, password, confirmpassword, name ,phone_number, intro, age, gender } = req.body;
+            const { imageUrl } = req.file.Location;
             if(!email || !password || !confirmpassword || !name || !phone_number || gender){
                 return res.status(400).json({message: "필수 입력칸을 모두 채워주세요"})
             }
@@ -28,7 +29,7 @@ export class Userscontroller {
 
 
     // 이메일 인증
-    verifySignUp = async ( email, verifiedusertoken ) => {
+    verifySignUp = async ( req, res, next ) => {
         try{
             const { email, verifiedusertoken } = req.body;
             await this.usersService.verifySignUp(email, verifiedusertoken);

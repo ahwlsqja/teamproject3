@@ -1,4 +1,4 @@
-import aws, { Pricing } from 'aws-sdk';
+import aws from 'aws-sdk';
 import multer from 'multer';
 import multerS3 from 'multer-s3';
 import { S3Client } from '@aws-sdk/client-s3'
@@ -6,9 +6,7 @@ import "dotenv/config";
 import fs from "fs";
 import { tmpdir } from "os";
 import { Upload } from "@aws-sdk/lib-storage";
-import { resolve } from 'path';
-import { rejects } from 'assert';
-import { error } from 'console';
+
 
 const s3 = new S3Client({
     accessKeyId: process.env.ACCESSKEY_ID,
@@ -53,7 +51,7 @@ const uploadUserImage = async (req, res, next) => {
     })
 }
 
-// 프로필 이미지 업로드 함수
+// 펫 이미지 업로드 함수
 const uploadPetImage = async (req, res, next) => {
     //업로드 함수를 정의
     return new Promise((resolve, reject) => {

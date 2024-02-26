@@ -4,6 +4,7 @@ import { redisClient } from '../redis/client.js';
 import { UsersRepository } from '../repositories/user.repositories.js';
 import { UsersService } from '../services/user.services.js';
 import { Userscontroller } from '../controllers/user.controller.js';
+import { uploadUserImage } from '../middlewares/image.middleware.js'
 import authMiddleware from '../middlewares/auth.middleware.js'
 
 
@@ -15,7 +16,7 @@ const usersService = new UsersService(usersRepository);
 const userscontroller = new Userscontroller(usersService);
 
 // 회원가입 API
-router.post('/user-sign-up', userscontroller.signUp)
+router.post('/user-sign-up', uploadUserImage, userscontroller.signUp)
 
 // 이메일 인증 API
 router.put('/user-sign-up-verify', userscontroller.verifySignUp)
@@ -28,7 +29,7 @@ router.get('/user-refresh', userscontroller.refreshToken)
 
 
 // 유저 조회 API
-router.get('/user_info', authMiddleware ,userscontroller.getUser)
+// router.get('/user_info', authMiddleware ,userscontroller.getUser)
 
 
 export default router
