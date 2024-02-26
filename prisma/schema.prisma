@@ -14,20 +14,21 @@ datasource db {
 }
 
 model Users {
-  userId    Int      @id @default(autoincrement()) @map("userId")
-  email     String   @unique @map("email")
-  password  String   @map("password")
-  createdAt DateTime @default(now()) @map("createdAt")
-  updatedAt DateTime @updatedAt @map("updatedAt")
-  name      String   @map("name")
-  intro      String?   @map("intro")
-  emailTokens String? @map("emailTokens")
-  profile_image String? @map("profile_image")
-  age           Int? @map("age")
-  gender        Gender @map("gender")
-  user_status User_Status @default(nonpass)
-  reviews Reviews[]
-  pets Pets[]
+  userId        Int         @id @default(autoincrement()) @map("userId")
+  email         String      @unique @map("email")
+  password      String      @map("password")
+  createdAt     DateTime    @default(now()) @map("createdAt")
+  updatedAt     DateTime    @updatedAt @map("updatedAt")
+  name          String      @map("name")
+  intro         String?     @map("intro")
+  emailTokens   String?     @map("emailTokens")
+  profile_image String?     @map("profile_image")
+  age           Int?        @map("age")
+  gender        Gender      @map("gender")
+  user_status   User_Status @default(nonpass)
+  reviews       Reviews[]
+  pets          Pets[]
+
   @@map("Users")
 }
 
@@ -66,23 +67,24 @@ enum Status {
 }
 
 model Sitters {
-  sitterId       Int            @id @default(autoincrement()) @map("sitterId")
-  email          String         @map("email")
-  name           String         @map("name") @db.VarChar(50)
-  profile_image  String?        @map("profile_image")
-  email_verified Int            @map("email_verified")
-  phone_number   String         @map("phone_number")
-  password       Int            @map("password")
-  createdAt      DateTime       @default(now()) @map("createdAt")
-  updatedAt      DateTime       @updatedAt @map("updatedAt")
-  career        Int            @map("career")
-  sitter_Status  Sitter_Status  @default(nonpass)     
-  intro          String?        @map("intro")
-  age            Int?           @map("age")
-  gender         Int?           @map("gender")
-  local          String         @map("local")
-  ablepettype    Ablepettype    @map("ablepettype")
-  reservations   Reservations[]
+  sitterId      Int           @id @default(autoincrement()) @map("sitterId")
+  email         String        @map("email")
+  name          String        @map("name") @db.VarChar(50)
+  profile_image String?       @map("profile_image")
+  emailTokens   String?       @map("emailTokens")
+  phone_number  String        @map("phone_number")
+  password      Int           @map("password")
+  createdAt     DateTime      @default(now()) @map("createdAt")
+  updatedAt     DateTime      @updatedAt @map("updatedAt")
+  career        Int           @map("career")
+  sitter_Status Sitter_Status @default(nonpass) @map("sitter_Status")
+  intro         String?       @map("intro")
+  age           Int?          @map("age")
+  gender        Int?          @map("gender")
+  local         String        @map("local")
+  ablepettype   Ablepettype   @map("ablepettype")
+
+  reservations Reservations[]
 
   @@map("Sitters")
 }
@@ -91,7 +93,6 @@ enum Sitter_Status {
   pass
   nonpass
 }
-
 
 enum Ablepettype {
   dog
