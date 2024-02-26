@@ -26,8 +26,9 @@ model Users {
   age           Int?        @map("age")
   gender        Gender      @map("gender")
   user_status   User_Status @default(nonpass)
-  reviews       Reviews[]
-  pets          Pets[]
+
+  reviews Reviews[]
+  pets    Pets[]
 
   @@map("Users")
 }
@@ -45,46 +46,38 @@ enum Gender {
 
 model Reviews {
   reviewid  Int      @id @default(autoincrement()) @map("reviewid")
-  sitterid  Int      @map("sitterid")
+  sitterId  Int      @map("sitterId")
   userId    Int      @map("userId")
   title     String   @map("title")
   content   String   @map("content") @db.Text
   createdAt DateTime @default(now()) @map("createdAt")
   updatedAt DateTime @updatedAt @map("updatedAt")
-  status    Status   @default(APPLY)
-  user      Users    @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  user   Users   @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  sitter Sitters @relation(fields: [sitterId], references: [sitterId], onDelete: Cascade)
 
   @@map("Reviews")
 }
 
-enum Status {
-  APPLY
-  DROP
-  PASS
-  INTERVIEW1
-  INTERVIEW2
-  FINAL_PASS
-}
-
 model Sitters {
-  sitterId      Int           @id @default(autoincrement()) @map("sitterId")
-  email         String        @map("email")
-  name          String        @map("name") @db.VarChar(50)
-  profile_image String?       @map("profile_image")
-  emailTokens   String?       @map("emailTokens")
-  phone_number  String        @map("phone_number")
-  password      Int           @map("password")
-  createdAt     DateTime      @default(now()) @map("createdAt")
-  updatedAt     DateTime      @updatedAt @map("updatedAt")
-  career        Int           @map("career")
-  sitter_Status Sitter_Status @default(nonpass) @map("sitter_Status")
-  intro         String?       @map("intro")
-  age           Int?          @map("age")
-  gender        Int?          @map("gender")
-  local         String        @map("local")
-  ablepettype   Ablepettype   @map("ablepettype")
-
-  reservations Reservations[]
+  sitterId       Int             @id @default(autoincrement()) @map("sitterId")
+  email          String          @map("email")
+  name           String          @map("name") @db.VarChar(50)
+  profile_image  String?         @map("profile_image")
+  email_verified Int             @map("email_verified")
+  phone_number   String          @map("phone_number")
+  password       Int             @map("password")
+  createdAt      DateTime        @default(now()) @map("createdAt")
+  updatedAt      DateTime        @updatedAt @map("updatedAt")
+  career         Int             @map("career")
+  sitter_Status  Sitter_Status   @default(nonpass) @map("Sitter_Status")
+  intro          String?         @map("intro")
+  age            Int?            @map("age")
+  gender         Int?            @map("gender")
+  adrress_Sitter Adrress_Sitters @map("Adrress_Sitters")
+  ablepettype    Ablepettype     @map("ablepettype")
+  reservations   Reservations[]
+  reviews        Reviews[]
 
   @@map("Sitters")
 }
@@ -94,9 +87,23 @@ enum Sitter_Status {
   nonpass
 }
 
+enum Adrress_Sitters {
+  seoul
+  gyeonggi
+  Gangwon
+  Chungbuk
+  Chungnam
+  jeonbuk
+  Jeonnam
+  Gyeongbuk
+  Gyeongnam
+  Jeju
+}
+
 enum Ablepettype {
-  dog
-  cat
+  DOG
+  CAT
+  OTHERS
 }
 
 model Reservations {
@@ -118,20 +125,22 @@ enum TASKSTATUS {
 }
 
 model ReservationPet {
-  reservationPetId Int          @id @default(autoincrement())
+  reservationPetId Int @id @default(autoincrement())
   petId            Int
   Id               Int
-  reservations     Reservations @relation(fields: [Id], references: [Id], onDelete: Cascade)
-  pets             Pets         @relation(fields: [petId], references: [petId], onDelete: Cascade)
+
+  reservations Reservations @relation(fields: [Id], references: [Id], onDelete: Cascade)
+  pets         Pets         @relation(fields: [petId], references: [petId], onDelete: Cascade)
 }
 
 model Pets {
-  petId          Int              @id @default(autoincrement()) @map("petId")
-  name           String           @map("name") @db.VarChar(50)
-  userId         Int              @map("userId")
-  petType        PETTYPE          @map("pettype")
-  age            Int              @map("age")
-  pet_image      String           @map("pet_image")
+  petId     Int     @id @default(autoincrement()) @map("petId")
+  name      String  @map("name") @db.VarChar(50)
+  userId    Int     @map("userId")
+  petType   PETTYPE @map("pettype")
+  age       Int     @map("age")
+  pet_image String  @map("pet_image")
+
   reservationPet ReservationPet[]
   user           Users            @relation(fields: [userId], references: [userId], onDelete: Cascade)
 }
@@ -139,5 +148,5 @@ model Pets {
 enum PETTYPE {
   DOG
   CAT
-  Others
+  OTHERS
 }
