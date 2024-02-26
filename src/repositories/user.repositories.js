@@ -11,6 +11,7 @@ export class UsersRepository {
     findUserByEmail = async (email) => {
         return await this.prisma.users.findFirst({
             where: { email: email }
+            
         });
     }
 

@@ -25,4 +25,29 @@ export class SittersRepository {
  findManyBySitter = async() => {
     return await this.prisma.sitters.findMany()
  }
+
+ //
+ getSitterBySitterId = async (sitterId) => {
+    return await this.prisma.sitters.findFirst({
+      where: { sitterId: +sitterId },
+      select: {
+        sitterId: true,
+        email: true,
+        name: true,
+        phone_number: true,
+        career: true,
+        local: true,
+        ablepettype: true,
+        profile_image: true,
+        intro: true,
+        age: true,
+        gender: true,
+        createdAt: true,
+        updatedAt: true,
+        reviews: {
+          select: { star: true }, //(의 평균...)
+        },
+      },
+    });
+  };
 }

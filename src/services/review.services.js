@@ -74,20 +74,7 @@ export class ReviewsService {
     await this.reviewsRepository.deleteReview(reviewId);
   };
 
-  // 시터 목록 조회 리뷰(평점순)
-  findManySitterId = async () => {
-    const sitterInfo = await this.sittersRepository.findManyBySitter();
-    const rankSitter = await this.reviewsRepository.findManySitterDesc();
-    for(const rank of rankSitter){
-      for(const sitter of sitterInfo){
-        if(rank.sitterId === sitter.sitterId){
-          rank.sitterName = sitter.name
-          rank.sitterEmail = sitter.email
-        }
-      }
-    }
-    return rankSitter
-  }
+
 
   // 목록 조회()
 

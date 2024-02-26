@@ -72,9 +72,6 @@ export class ReviewsRepository {
   findManySitterDesc = async() => {
     const reviewsList = await this.prisma.reviews.groupBy({
         by: ['sitterId'],
-        select: {
-          
-        },
         _avg: {
           star: true
         },
