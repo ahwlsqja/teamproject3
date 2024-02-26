@@ -14,6 +14,7 @@ export class ReservationsService {
         }
         // 시터가 예약 생성을 하려는 날짜에 예약이 잡혀있다면 해당 날짜는 불가능 합니다. 
         const existingReservations = await this.reservationsRepository.findReservationsBySitterAndDate(sitterId, startDay, lastDay);
+
         if (existingReservations.length > 0 ) {
             throw new Error('해당날짜는 불가능합니다.');
         }
@@ -132,6 +133,30 @@ export class ReservationsService {
         return findReservationsBySitter
     }
 
+    // 시터의 예약 수락 코드
+    ReservationAcceptBySitter = async(sitterId, reservationId) => {
+        // 유효성 검사 필요함 sitter 코드 들어오면 할게여
+        const reservation = await this.reservationsRepository.getReservationById(reservationId);
+        if(!reservation) {
+            throw new Error("예약이 존재하지 않습니다.");
+        }
+        // 예약에 기록된 시터와 현재 시터가 일치하지 않을 경우 에러 처리
 
+        if(reservation.sitterId !== sitterId){
+            throw new Error("시터 정보가 일치하지 않습니다.");
+        }
+        // 겹치는 날짜중에 ACCEPTED면 상태면 안되고 그외는 할 수 있게
+        const existingReservations = await this.reservationsRepository.findReservationsBySitterAndDate(sitterId, reservation.startDay, reservation.lastDay)
+        if(existingReservations[0]){
+          throw new Error("예약할수 없습니다.")
+        }
 
+        if(reservation.status !== "ACCEPTED"){
+            const updatedReservation = await this.reservationsRepository.ReservationAcceptBySitter(reservationId);
+            return updatedReservation
+        } else{
+            throw new Error("이미 수락하셨습니다.");
+        }
+
+    }
 }

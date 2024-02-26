@@ -68,4 +68,28 @@ export class ReservationsController {
             next(error)
         }
     }
+
+    // 시터의 예약 수락 코드
+    ReservationAcceptBySitter = async(sitterId, reservationId) => {
+        const { sitterId } = req.sitter;
+        const { reservationId } = req.params;
+        if(!reservationId) {
+            return res.status(400).json("아이디를 입력해주세요.");
+        }
+        try{
+            const ReservationAcceptBySitter = await this.reservationsService.ReservationAcceptBySitter(sitterId, reservationId)
+            return res.status(200).json({ data:ReservationAcceptBySitter})
+        }catch(error)
+        {
+            next(error)
+        }
+    }
+
+
+
+
+
+
+
 }
+

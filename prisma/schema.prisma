@@ -69,11 +69,11 @@ model Sitters {
   createdAt      DateTime       @default(now()) @map("createdAt")
   updatedAt      DateTime       @updatedAt @map("updatedAt")
   career        Int            @map("career")
-  sitter_Status  Sitter_Status  @default(nonpass)     
+  sitter_Status  Sitter_Status  @default(nonpass) @map("Sitter_Status") 
   intro          String?        @map("intro")
   age            Int?           @map("age")
   gender         Int?           @map("gender")
-  local          String         @map("local")
+  adrress_Sitter Adrress_Sitters  @map("Adrress_Sitters")
   ablepettype    Ablepettype    @map("ablepettype")
   reservations   Reservations[]
   reviews Reviews[]
@@ -87,10 +87,23 @@ enum Sitter_Status {
   nonpass
 }
 
+enum Adrress_Sitters {
+  seoul
+  gyeonggi
+  Gangwon
+  Chungbuk
+  Chungnam
+  jeonbuk
+  Jeonnam
+  Gyeongbuk
+  Gyeongnam
+  Jeju
+}
 
 enum Ablepettype {
-  dog
-  cat
+  DOG
+  CAT
+  Others
 }
 
 model Reservations {

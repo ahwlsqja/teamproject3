@@ -32,4 +32,7 @@ router.delete('/cancle/:reservationId', authMiddleware, reservationsController.c
 // 예약 수정 API
 router.put('/update/:reservationId', authMiddleware, reservationsController.updateReservation) 
 
+// 시터 예약 수락 API
+router.put('/accepted/:reservationId', authMiddlewareSitter, reservationsController.ReservationAcceptBySitter) 
+
 export default router

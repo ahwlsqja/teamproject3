@@ -176,7 +176,18 @@ export class ReservationsRepository {
     }
 
     // 시터의 예약 수락 코드
-    
+    ReservationAcceptBySitter = async(reservationId) => {
+        const updatedReservation = await this.prisma.reservations.update({
+            where: {
+                Id: reservationId
+            },
+            data: {
+                status: "ACCEPTED"
+            },
+        }); 
+
+        return updatedReservation
+    }
 
 
 }
