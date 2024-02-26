@@ -34,7 +34,7 @@ export class SittersService {
         return sitter;
       };
 
-      
+
     // 시터 평점순 목록 내림차순
     findManySitterId = async () => {
         const sitterInfo = await this.sittersRepository.findManyBySitter();
@@ -44,10 +44,19 @@ export class SittersService {
             if(rank.sitterId === sitter.sitterId){
               rank.sitterName = sitter.name
               rank.sitterEmail = sitter.email
-              rank.sitter
             }
           }
         }
         return rankSitter
       }
+
+      getSittersBypetType = async (ablePetType) => {
+        return await this.sittersRepository.getSitterBypetType(ablePetType)
+    }
+
+
+
+    getSittersByAddress = async (adrress_Sitters) => {
+        return await this.sittersRepository.getSittersByAddress(adrress_Sitters)
+    }
 }

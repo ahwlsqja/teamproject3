@@ -1,6 +1,6 @@
 import { emailVerificationMiddleware } from "../middlewares/emailVerification.middleware.js";
 import { tokenKey } from "../redis/keys.js"
-import { Prisma  } from "@prisma/client";
+import { PETTYPE, Prisma  } from "@prisma/client";
 
 
 export class SittersRepository {
@@ -44,10 +44,19 @@ export class SittersRepository {
         gender: true,
         createdAt: true,
         updatedAt: true,
-        reviews: {
-          select: { star: true }, //(의 평균...)
-        },
       },
     });
   };
+
+  getSittersBypetType = async (ablePetType) => {
+    return await this.prisma.sitters.findMany({
+        where: { ablePetType: ablePetType }
+    })
+  }
+
+  getSittersByAddress = async (adrress_Sitters) => {
+    return await this.prisma.sitters.findMany({
+        where: { adrress_Sitters : adrress_Sitters}
+    })
+  }
 }

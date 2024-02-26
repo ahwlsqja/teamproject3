@@ -19,7 +19,7 @@ export class Userscontroller {
                 return res.status(400).json({ message: "비밀번호가 일치하지 않습니다."});        
             }
 
-            const user = await this.usersService.signUp(email, password, name, phone_number, intro, age, gender)
+            const user = await this.usersService.signUp(email, password, name, phone_number, intro, age, gender, imageUrl)
 
             return res.status(201).json(user);
         } catch(err) {

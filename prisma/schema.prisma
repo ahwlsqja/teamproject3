@@ -71,8 +71,8 @@ model Sitters {
   sitter_Status  Sitter_Status  @default(nonpass)     
   intro          String?        @map("intro")
   age            Int?           @map("age")
-  gender         Int?           @map("gender")
-  adrress_Sitters          Adrress_Sitters         @map("Adrress_Sitters")
+  gender         Gender         @map("gender")
+  adrress_Sitters Adrress_Sitters   @map("Adrress_Sitters")
   ablePetType    Ablepettype    @map("ablepettype")
   reservations   Reservations[]
   reviews        Reviews[]
