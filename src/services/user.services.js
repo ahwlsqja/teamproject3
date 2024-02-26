@@ -14,7 +14,7 @@ export class UsersService {
         await new Promise((resolve) => setTimeout(resolve, 2000));
 
         const isExistUser = await this.usersRepository.findUserByEmail(email);
-        if(!isExistUser){
+        if(isExistUser){
             throw new Error('이미 있는 이메일입니다.');
         }
 
@@ -64,12 +64,12 @@ export class UsersService {
             throw new Error('비밀번호가 일치하지 않습니다.')
         }
         // token만들어줌 
-        const token = jwt.sign({ userId: user.userId },process.env.JWT_SECRET, { expiresIn: '12h'});
+        const Acesstoken = jwt.sign({ userId: user.userId },process.env.JWT_SECRET, { expiresIn: '12h'});
         const refreshToken = jwt.sign({ userId: user.userId }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
 
         await this.usersRepository.saveToken(user.userId, refreshToken);
 
-        return { token, refreshToken };
+        return { Acesstoken, refreshToken };
 
     }
 
@@ -86,16 +86,17 @@ export class UsersService {
                 throw new Error("리프레쉬 토큰이 유효하지 않습니다.")
             };
             
-            const newToken = jwt.sign({ userId : userId }, process.env.JWT_SECRET, { expiresIn: '12h'});
+            const Acesstoken = jwt.sign({ userId : userId }, process.env.JWT_SECRET, { expiresIn: '12h'});
             const newRefreshToken = jwt.sign({ userId: userId }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d'})
             await this.usersRepository.saveToken(userId, newRefreshToken);
 
-            return { newToken, newRefreshToken };
+            return { Acesstoken, newRefreshToken };
         } catch(err) {
             throw new Error('리프레시 토큰이 유효하지 않습니다.');
         }
     }
 
+    
     // 유저 상세 조회
     findUserByEmail = async (email) => {
         const user = await this.usersRepository.findUserByEmail(email);

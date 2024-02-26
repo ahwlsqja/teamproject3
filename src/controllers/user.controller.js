@@ -47,7 +47,7 @@ export class Userscontroller {
                 return res.status(400).json({ message: "입력칸을 채워주세요."})
             }
             const tokens = await this.usersService.signIn(email, password);
-            res.cookie('authorization', `Bearer ${tokens.token}`);
+            res.cookie('Acesstoken', `Bearer ${tokens.token}`);
             res.cookie('refreshToken', `Bearer ${tokens.refreshToken}`);
             return res.status(200).json({ message:'로그인에 성공하였습니다.', token: tokens.token})
         } catch(err){

@@ -21,14 +21,14 @@ export default async function(req, res, next) {
     if (tokenType !== 'Bearer') throw new Error('토큰 타입이 Bearer 형식이 아닙니다.');
 
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    const userId = decodedToken.userId;
+    const sitterId = decodedToken.sitterId;
 
-    const user = await prisma.users.findFirst({
-        where: {userId: +userId}
+    const sitter = await prisma.sitters.findFirst({
+        where: {sitterId: +sitterId}
     });
-    if(!user) throw new Error('토큰 사용자가 존재하지 않습니다.');
+    if(!sitter) throw new Error('토큰 사용자가 존재하지 않습니다.');
 
-    req.user = user;
+    req.sitter = sitter;
 
     next();
  

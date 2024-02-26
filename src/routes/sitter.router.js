@@ -13,3 +13,6 @@ const sittersService = new SittersService(sittersRepository);
 const sittersController = new SittersController(sittersService);
 
 router.get('/sitter', authMiddleware, sittersController.get);
+
+
+export default router
