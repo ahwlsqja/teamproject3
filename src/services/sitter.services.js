@@ -1,6 +1,5 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { sendTodayData } from "../middlewares/slackBot.js";
 import "dotenv/config.js";
 import { uploadUserImage } from "../middlewares/image.middleware.js";
 
@@ -16,14 +15,14 @@ export class SittersService {
     name,
     phone_number,
     career,
-    local,
-    ablepettype,
+    adrress_Sitter,
+    ablePetType,
     profile_image,
     intro,
     age,
     gender
   ) => {
-    const isExistSitter = await this.sittersRepository.findsitterByEmail(email);
+    const isExistSitter = await this.sittersRepository.findSitterByEmail(email);
     if (!isExistSitter) {
       throw new Error("이미 시터로 가입한 이메일입니다.");
     }
@@ -35,26 +34,19 @@ export class SittersService {
       name,
       phone_number,
       career,
-      local,
-      ablepettype,
+      adrress_Sitter,
+      ablePetType,
       profile_image,
       intro,
       age,
       gender
     );
 
-    try {
-      await sendTodayData();
-    } catch (err) {
-      next(err);
-    } // 이거 뭐지요...? 왜있죠...?
-
     return sitter;
   };
 
   // 회원가입 이메일 인증
   verifySignUp = async (email, verifiedusertoken) => {
-    await new Promise((resolve) => setTimeout(resolve, 2000));
     const sitter = await this.sittersRepository.findSitterByEmail(email);
     if (!sitter.email_verified) {
       throw new Error("인증번호가 없습니다.");
@@ -66,11 +58,6 @@ export class SittersService {
     await this.sittersRepository.updateSitterVerificationStatus(
       sitter.sitterId
     );
-    try {
-      await sendTodayData();
-    } catch (err) {
-      next(err);
-    }
   };
 
   //시터 로그인
@@ -138,24 +125,7 @@ export class SittersService {
     }
   };
 
-  //   findSitterByEmail = async (email) => {
-  //     const sitter = await this.sittersRepository.findSitterByEmail(email);
-
-  //     return {
-  //       sitterId: sitter.sitterId,
-  //       email: sitter.email,
-  //       name: sitter.name,
-  //       age: sitter.age,
-  //       gender: sitter.gender,
-  //       intro: sitter.intro,
-  //       career: sitter.career,
-  //       local: sitter.local,
-  //       ablepettype: sitter.ablepettype,
-  //       profile_image: sitter.profile_image,
-  //       reviews: {select: {star의 평균}}
-  //     };
-  //   };이거 있어야되나..? 여기선 어차피 repository에 있는거 쓰고.. sitterController에서 안써서 필요없는데..
-
+  //시터목록조회(정렬)
   getSitterList = async (orderKey, orderValue) => {
     const sitters = await this.sittersRepository.getSitterList(
       orderKey,
@@ -164,6 +134,7 @@ export class SittersService {
     return sitters;
   };
 
+  //시터상세정보조회(sitterId로)
   getSitterBySitterId = async (sitterId) => {
     const sitter = await this.sittersRepository.getSitterBySitterId(sitterId);
 
@@ -172,5 +143,54 @@ export class SittersService {
     }
 
     return sitter;
+  };
+
+  //시터 정보 수정
+  updateSitterInfo = async (
+    email,
+    password,
+    name,
+    phone_number,
+    career,
+    intro,
+    age,
+    gender,
+    adrress_Sitter,
+    ablePetType
+  ) => {
+    const sitter = await this.sittersRepository.findSitterByEmail(email);
+    const checkPassword = await bcrypt.compare(password, sitter.password);
+
+    if (!checkPassword) {
+      throw new Error("비밀번호가 다릅니다.");
+    }
+
+    await this.sittersRepository.updateSitterInfo(
+      email,
+      name,
+      phone_number,
+      career,
+      intro,
+      age,
+      gender,
+      adrress_Sitter,
+      ablePetType
+    );
+
+    return;
+  };
+
+  //시터 회원 탈퇴
+  deleteSitterSelf = async (password, email) => {
+    const sitter = await this.sittersRepository.findSitterByEmail(email);
+    const checkPassword = await bcrypt.compare(password, sitter.password);
+
+    if (!checkPassword) {
+      throw new Error("비밀번호가 다릅니다.");
+    }
+
+    await this.sittersRepository.deleteSitterSelf(email);
+
+    return;
   };
 }

@@ -13,9 +13,8 @@ export class SittersController {
         name,
         phone_number,
         career,
-        local,
-        ablepettype,
-        profile_image,
+        adrress_Sitter,
+        ablePetType,
         intro,
         age,
         gender,
@@ -28,8 +27,8 @@ export class SittersController {
         !name ||
         !phone_number ||
         !career ||
-        !local ||
-        !ablepettype
+        !adrress_Sitter ||
+        !ablePetType
       ) {
         return res
           .status(400)
@@ -48,10 +47,36 @@ export class SittersController {
           .json({ message: "비밀번호가 일치하지 않습니다." });
       }
 
-      if (!["dog", "cat"].includes(ablepettype)) {
+      //성별 값이 있는데 enum문자열이 아니면 에러
+      if (gender && !["MALE", "FEMALE"].includes(gender.toLowerCase())) {
+        return res.status(400).json({ message: "성별을 바르게 입력해주세요." });
+      }
+
+      //ablePetType값이 enum문자열이 아니면 에러
+      if (!["dog", "cat", "others"].includes(ablePetType.toLowerCase())) {
         return res.status(400).json({
           message: "펫 종류 입력이 올바르지 않습니다.",
         });
+      }
+
+      //adrress_Sitter값이 enum문자열이 아니면 에러
+      if (
+        ![
+          "seoul",
+          "gyeonggi",
+          "gangwon",
+          "chungbuk",
+          "chungnam",
+          "jeonbuk",
+          "jeonnam",
+          "gyeongbuk",
+          "gyeongnam",
+          "jeju",
+        ].includes(adrress_Sitter.toLowerCase())
+      ) {
+        return res
+          .status(400)
+          .json({ message: "거주지역 입력이 올바르지 않습니다" });
       }
 
       const sitter = await this.sittersService.signUp(
@@ -60,9 +85,8 @@ export class SittersController {
         name,
         phone_number,
         career,
-        local,
-        ablepettype,
-        profile_image,
+        adrress_Sitter,
+        ablePetType,
         intro,
         age,
         gender
@@ -77,7 +101,7 @@ export class SittersController {
   };
 
   // 시터 이메일 인증
-  verifySignUp = async (email, verifiedsittertoken) => {
+  verifySignUp = async (req, res, next) => {
     try {
       const { email, verifiedsittertoken } = req.body;
       await this.sittersService.verifySignUp(email, verifiedsittertoken);
@@ -121,13 +145,26 @@ export class SittersController {
       next(err);
     }
   };
-  //시터 목록 조회(필터링/정렬)//필터링 구현안됨. 인기순정렬 손봐야 함.
+
+  //로그아웃
+  signOut = async (req, res, next) => {
+    try {
+      res.clearCookies("accessToken");
+      res.clearCookies("refreshToken");
+
+      return res.status(200).json({ message: "로그아웃 되었습니다." });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  //시터 목록 조회(경력순정렬)
   getSitterList = async (req, res, next) => {
     try {
-      const orderKey = req.query.orderKey ?? "star";
+      const orderKey = req.query.orderKey ?? "career";
       const orderValue = req.query.orderValue ?? "desc";
 
-      if (!["star", "career"].includes(orderKey)) {
+      if (!["career"].includes(orderKey)) {
         return res.status(400).json({
           message: "orderkey가 올바르지 않습니다.",
         });
@@ -161,6 +198,7 @@ export class SittersController {
       next(err);
     }
   };
+
   //시터 상세조회
   getSitterBySitterId = async (req, res, next) => {
     try {
@@ -168,6 +206,103 @@ export class SittersController {
 
       const sitter = await this.sittersService.getSitterBySitterId(sitterId);
       return res.ststus(200).json({ data: sitter });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  //시터 정보 수정
+  updateSitterInfo = async (req, res, next) => {
+    try {
+      const {
+        password,
+        name,
+        phone_number,
+        career,
+        intro,
+        age,
+        gender,
+        adrress_Sitter,
+        ablePetType,
+      } = req.body;
+      const { email } = req.sitter; //이메일주소로 받아야함
+
+      //시터정보를 수정하려면 password를 필수적으로 입력해서 본인을 확인해야함.
+      if (!password) {
+        return res
+          .status(400)
+          .json({ message: "정보를 수정하시려면 비밀번호를 입력해주세요." });
+      }
+
+      //성별 값이 있는데 enum문자열이 아니면 에러
+      if (gender && !["MALE", "FEMALE"].includes(gender.toLowerCase())) {
+        return res.status(400).json({ message: "성별을 바르게 입력해주세요." });
+      }
+
+      //adrress_Sitter값이 있는데 enum문자열이 아니면 에러
+      if (
+        adrress_Sitter &&
+        ![
+          "seoul",
+          "gyeonggi",
+          "gangwon",
+          "chungbuk",
+          "chungnam",
+          "jeonbuk",
+          "jeonnam",
+          "gyeongbuk",
+          "gyeongnam",
+          "jeju",
+        ].includes(adrress_Sitter.toLowerCase())
+      ) {
+        return res
+          .status(400)
+          .json({ message: "거주지역 입력이 올바르지 않습니다" });
+      }
+
+      //ablePetType값이 있는데 enum문자열이 아니면 에러
+      if (
+        ablePetType &&
+        !["dog", "cat", "others"].includes(ablePetType.toLowerCase())
+      ) {
+        return res.status(400).json({
+          message: "펫 종류 입력이 올바르지 않습니다.",
+        });
+      }
+
+      await this.sittersService.updateSitterInfo(
+        email,
+        password,
+        name,
+        phone_number,
+        career,
+        intro,
+        age,
+        gender,
+        adrress_Sitter,
+        ablePetType
+      );
+
+      return res
+        .sytatus(201)
+        .json({ message: "시터정보 수정사항이 저장되었습니다." });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  //시터 회원탈퇴
+  deleteSitterSelf = async (req, res, next) => {
+    try {
+      const { password } = req.body;
+      const { email } = req.sitter;
+
+      await this.sittersService.deleteSitterSelf(password, email);
+
+      res.clearCookies("accessToken");
+      res.clearCookies("refreshToken");
+
+      return res.ststus(200).json({ message: "시터 회원 탈퇴되었습니다." });
     } catch (err) {
       next(err);
     }

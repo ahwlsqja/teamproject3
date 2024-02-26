@@ -8,7 +8,7 @@ export class SittersRepository {
     this.redisClient = redisClient;
   }
 
-  findsitterByEmail = async (email) => {
+  findSitterByEmail = async (email) => {
     return await this.prisma.sitters.findFirst({
       where: { email: email },
     });
@@ -20,42 +20,34 @@ export class SittersRepository {
     name,
     phone_number,
     career,
-    local,
+    adrress_Sitter,
     ablepettype,
-    profile_image, //프로필이미지 req.body로 안받나요...
     intro,
     age,
     gender
   ) => {
     const imageUrl = req.file.Location;
     const token = Math.floor(Math.random() * 900000) + 100000;
-    const [sitter] = await this.prisma.$transaction(
-      async (tx) => {
-        const sitter = await tx.sitters.create({
-          data: {
-            email,
-            password: hashedPassword,
-            name,
-            phone_number,
-            intro,
-            age,
-            gender,
-            career,
-            local,
-            ablepettype,
-            sitter_Status: "nonpass",
-            email_verified: token.toString(),
-            profile_image: imageUrl,
-          },
-        });
-
-        await emailVerificationMiddleware(email, token);
-        return [sitter];
+    await tx.sitters.create({
+      data: {
+        email,
+        password: hashedPassword,
+        name,
+        phone_number,
+        intro,
+        age,
+        gender,
+        career,
+        adrress_Sitter,
+        ablepettype,
+        sitter_Status: "nonpass",
+        email_verified: token.toString(),
+        profile_image: imageUrl,
       },
-      {
-        isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted,
-      }
-    );
+    });
+
+    await emailVerificationMiddleware(email, token);
+    return;
   };
 
   updateSitterVerificationStatus = async (sitterId) => {
@@ -87,19 +79,17 @@ export class SittersRepository {
         sitterId: true,
         name: true,
         career: true,
-        local: true,
+        adrress_Sitter: true,
         ablepettype: true,
         profile_image: true,
         intro: true,
-        reviews: {
-          select: { star: true }, //(의 평균...)
-        },
       },
       orderBy: [{ [orderKey]: orderValue.toLowerCase() }],
     });
   };
 
   getSitterBySitterId = async (sitterId) => {
+    //보여줄만한 정보만 가져옴
     return await this.prisma.sitters.findFirst({
       where: { sitterId: +sitterId },
       select: {
@@ -108,7 +98,7 @@ export class SittersRepository {
         name: true,
         phone_number: true,
         career: true,
-        local: true,
+        adrress_Sitter: true,
         ablepettype: true,
         profile_image: true,
         intro: true,
@@ -116,10 +106,41 @@ export class SittersRepository {
         gender: true,
         createdAt: true,
         updatedAt: true,
-        reviews: {
-          select: { star: true }, //(의 평균...)
-        },
       },
     });
+  };
+
+  updateSitterInfo = async (
+    email,
+    name,
+    phone_number,
+    career,
+    intro,
+    age,
+    gender,
+    adrress_Sitter,
+    ablePetType
+  ) => {
+    await this.prisma.sitters.update({
+      where: { email: email },
+      data: {
+        name,
+        phone_number,
+        career,
+        intro,
+        age,
+        gender,
+        adrress_Sitter,
+        ablePetType,
+      },
+    });
+    return;
+  };
+
+  deleteSitterSelf = async (email) => {
+    await this.prisma.sitters.delete({
+      where: { email: email },
+    });
+    return;
   };
 }
