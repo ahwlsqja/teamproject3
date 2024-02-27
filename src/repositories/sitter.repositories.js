@@ -4,25 +4,29 @@ import { PETTYPE, Prisma  } from "@prisma/client";
 
 
 export class SittersRepository {
-    constructor(prisma, redisClient){
-        this.prisma = prisma;
-        this.redisClient = redisClient;
+    constructor(prisma, redisClient) {
+      this.prisma = prisma;
+      this.redisClient = redisClient;
     }
 
-
-
-
-
-    // 아이디로 시터찾기
-  findSitterById = async(sitterId) => {
+// 이메일로 시터찾기
+findSitterByEmail = async (email) => {
     return await this.prisma.sitters.findFirst({
-        where: {
-            sitterId: +sitterId
-        }
+         where: { email: email },
+    });
+};
+
+// 아이디로 시터찾기
+findSitterById = async(sitterId) => {
+    return await this.prisma.sitters.findFirst({
+    where: {
+        sitterId: +sitterId
+    }
   })
 }
 
- findManyBySitter = async() => {
+
+findManyBySitter = async() => {
     return await this.prisma.sitters.findMany()
  }
 

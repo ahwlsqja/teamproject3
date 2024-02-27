@@ -67,7 +67,7 @@ model Sitters {
   password       Int            @map("password")
   createdAt      DateTime       @default(now()) @map("createdAt")
   updatedAt      DateTime       @updatedAt @map("updatedAt")
-  career        Int            @map("career")
+  career         Int            @map("career")
   sitter_Status  Sitter_Status  @default(nonpass)     
   intro          String?        @map("intro")
   age            Int?           @map("age")
