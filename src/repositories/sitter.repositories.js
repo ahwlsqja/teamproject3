@@ -20,22 +20,22 @@ export class SittersRepository {
     email,
     hashedPassword,
     name,
-    phone_number,
+    phone_Number,
     career,
     adrress_Sitter,
     ablepettype,
     intro,
     age,
-    gender
+    gender,
+    imageUrl
   ) => {
-    const imageUrl = req.file.Location;
     const token = Math.floor(Math.random() * 900000) + 100000;
     await this.prisma.sitters.create({
       data: {
         email,
         password: hashedPassword,
         name,
-        phone_number,
+        phone_Number,
         intro,
         age,
         gender,
@@ -52,7 +52,7 @@ export class SittersRepository {
     return;
   };
 
-  //이메일 인증시 상태 바꿔줌
+  //시터 상태 업데이트(이메일 인증시)
   updateSitterVerificationStatus = async (sitterId) => {
     await this.prisma.sitters.update({
       where: { sitterId: +sitterId },
@@ -60,12 +60,12 @@ export class SittersRepository {
     });
   };
 
-  //리프레시 토큰을 레디스에 저장함
+  // 토큰 저장(for redis)
   saveToken = async (sitterId, refreshToken) => {
     return this.redisClient.hSet(tokenKey(sitterId), "token", refreshToken);
   };
 
-  //레디스에서 토큰을 가져옴
+  //리프레시 토큰 가져오기(for redis)
   getToken = async (sitterrId) => {
     return new Promise((resolve, reject) => {
       this.redisClient.hGet(tokenKey(sitterrId), "token", (err, data) => {
@@ -94,20 +94,33 @@ export class SittersRepository {
     });
   };
 
-  //시터 정보 상세조회(시터 아이디로)
+  // 아이디로 시터찾기
+  findSitterById = async (sitterId) => {
+    return await this.prisma.sitters.findFirst({
+      where: {
+        sitterId: +sitterId,
+      },
+    });
+  };
+
+  // 한번에 많은 시터 찾기
+  findManyBySitter = async () => {
+    return await this.prisma.sitters.findMany();
+  };
+
+  // 아이디로 시터찾아서 특정 필드만
   getSitterBySitterId = async (sitterId) => {
-    //보여줄만한 정보만 가져옴
     return await this.prisma.sitters.findFirst({
       where: { sitterId: +sitterId },
       select: {
         sitterId: true,
         email: true,
         name: true,
-        phone_number: true,
+        phone_Number: true,
         career: true,
         adrress_Sitter: true,
         ablepettype: true,
-        profile_image: true,
+        profile_Image: true,
         intro: true,
         age: true,
         gender: true,
@@ -121,7 +134,7 @@ export class SittersRepository {
   updateSitterInfo = async (
     email,
     name,
-    phone_number,
+    phone_Number,
     career,
     intro,
     age,
@@ -133,7 +146,7 @@ export class SittersRepository {
       where: { email: email },
       data: {
         name,
-        phone_number,
+        phone_Number,
         career,
         intro,
         age,
