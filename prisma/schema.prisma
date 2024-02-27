@@ -22,7 +22,7 @@ model Users {
   name      String   @map("name")
   intro      String?   @map("intro")
   emailTokens String? @map("emailTokens")
-  profile_image String? @map("profile_image")
+  profile_Image String? @map("profile_Image")
   age           Int? @map("age")
   gender        Gender @map("gender")
   user_status User_Status @default(nonpass)
@@ -37,55 +37,61 @@ enum User_Status {
 }
 
 enum Gender {
-  Man
-  Woman
-  Transgender
+  MALE
+  FEMALE
 }
 
 model Reviews {
-  reviewid  Int      @id @default(autoincrement()) @map("reviewid")
-  sitterid  Int      @map("sitterid")
+  reviewId  Int      @id @default(autoincrement()) @map("reviewId")
+  sitterId  Int      @map("sitterId")
   userId    Int      @map("userId")
   title     String   @map("title")
   content   String   @map("content") @db.Text
   createdAt DateTime @default(now()) @map("createdAt")
   updatedAt DateTime @updatedAt @map("updatedAt")
-  status    Status   @default(APPLY)
+  star      Int      @map("star")
+  sitter    Sitters  @relation(fields: [sitterId], references: [sitterId], onDelete: Cascade)
   user      Users    @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   @@map("Reviews")
 }
 
-enum Status {
-  APPLY
-  DROP
-  PASS
-  INTERVIEW1
-  INTERVIEW2
-  FINAL_PASS
-}
 
 model Sitters {
   sitterId       Int            @id @default(autoincrement()) @map("sitterId")
   email          String         @map("email")
   name           String         @map("name") @db.VarChar(50)
-  profile_image  String?        @map("profile_image")
+  profile_Image  String?        @map("profile_Image")
   email_verified Int            @map("email_verified")
-  phone_number   String         @map("phone_number")
+  phone_Number   String         @map("phone_Number")
   password       Int            @map("password")
   createdAt      DateTime       @default(now()) @map("createdAt")
   updatedAt      DateTime       @updatedAt @map("updatedAt")
-  career        Int            @map("career")
+  career         Int            @map("career")
   sitter_Status  Sitter_Status  @default(nonpass)     
   intro          String?        @map("intro")
   age            Int?           @map("age")
-  gender         Int?           @map("gender")
-  local          String         @map("local")
-  ablepettype    Ablepettype    @map("ablepettype")
+  gender         Gender         @map("gender")
+  adrress_Sitters Adrress_Sitters   @map("Adrress_Sitters")
+  ablePetType    Ablepettype    @map("ablepettype")
   reservations   Reservations[]
+  reviews        Reviews[]
 
   @@map("Sitters")
 }
+enum Adrress_Sitters {
+  seoul
+  gyeonggi
+  gangwon
+  chungbuk
+  chungnam
+  jeonbuk
+  jeonnam
+  gyeongbuk
+  gyeongnam
+  jeju
+}
+
 
 enum Sitter_Status {
   pass
@@ -96,6 +102,7 @@ enum Sitter_Status {
 enum Ablepettype {
   dog
   cat
+  others
 }
 
 model Reservations {
@@ -105,15 +112,15 @@ model Reservations {
   lastDay        DateTime
   createdAt      DateTime         @default(now())
   updatedAt      DateTime
-  status         TASKSTATUS       @default(ACCEPTED)
+  status         TASKSTATUS       @default(accepted)
   reservationPet ReservationPet[]
   sitters        Sitters          @relation(fields: [sitterId], references: [sitterId], onDelete: Cascade)
 }
 
 enum TASKSTATUS {
-  ACCEPTED
-  APPLYING
-  REJECTED
+  accepted
+  applying
+  regected
 }
 
 model ReservationPet {
@@ -130,13 +137,13 @@ model Pets {
   userId         Int              @map("userId")
   petType        PETTYPE          @map("pettype")
   age            Int              @map("age")
-  pet_image      String           @map("pet_image")
+  pet_Image      String           @map("pet_Image")
   reservationPet ReservationPet[]
   user           Users            @relation(fields: [userId], references: [userId], onDelete: Cascade)
 }
 
 enum PETTYPE {
-  DOG
-  CAT
-  Others
+  dog
+  cat
+  others
 }

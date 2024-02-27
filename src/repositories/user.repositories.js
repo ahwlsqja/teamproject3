@@ -11,6 +11,7 @@ export class UsersRepository {
     findUserByEmail = async (email) => {
         return await this.prisma.users.findFirst({
             where: { email: email }
+            
         });
     }
 
@@ -34,8 +35,15 @@ export class UsersRepository {
         })
     }
 
-    createUser = async (email, hashedPassword, name, phone_number, intro, age, gender) => {
-        const imageUrl = req.file.Location;
+    findUserByUserId = async(userId) => {
+        return await this.prisma.users.findFirst({
+            where: {
+                userId : +userId
+            }
+        })
+    }
+
+    createUser = async (email, hashedPassword, name, phone_number, intro, age, gender, imageUrl) => {
         const token = Math.floor(Math.random() * 900000) + 100000;
         const [user] = await this.prisma.$transaction(async(tx) => {
             const user = await tx.users.create({
