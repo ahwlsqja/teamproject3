@@ -8,13 +8,14 @@ export class UsersRepository {
         this.redisClient = redisClient;
     }
 
+    // email로 유저 찾기
     findUserByEmail = async (email) => {
         return await this.prisma.users.findFirst({
             where: { email: email }
-
         });
     }
 
+    // Id로 유저 찾기(펫까지 찾아줌)
     getUserById = async (userId) => {
         return await this.prisma.users.findMany({
             where: { userId: +userId },
@@ -25,7 +26,7 @@ export class UsersRepository {
                 updatedAt: true,
                 pets : {
                     select : {
-                        name: true,
+                        namePet: true,
                         petId: true,
                         petType: true,
                         age: true,
@@ -35,6 +36,7 @@ export class UsersRepository {
         })
     }
 
+    // 유저 아이디로 유저 찾기
     findUserByUserId = async(userId) => {
         return await this.prisma.users.findFirst({
             where: {
@@ -43,6 +45,12 @@ export class UsersRepository {
         })
     }
 
+    // 유저 목록 조회
+    findList = async() =>{
+        return await this.prisma.users.findMany()
+    }
+
+    // 유저 생성하기
     createUser = async (email, hashedPassword, name, phone_Number, intro, age, gender, imageUrl) => {
         const token = Math.floor(Math.random() * 900000) + 100000;
         const user = await this.prisma.users.create({
@@ -66,7 +74,7 @@ export class UsersRepository {
         
         
 
-
+    // 유저 이메일 인증 
     updateUserVerificationStatus = async (userId) => {
         await this.prisma.users.update({
             where: { userId: userId },
@@ -75,19 +83,31 @@ export class UsersRepository {
     }
 
     saveToken = async (userId, refreshToken) => {
-        return this.redisClient.hSet(tokenKey(userId), "token", refreshToken);
+        return await this.redisClient.hSet(tokenKey(userId), "token", refreshToken);
     };
 
 
     getToken = async (userId) => {
-        return new Promise((resolve, reject) => {
-            this.redisClient.hGet(tokenKey(userId), 'token', (err, data) => {
-                if(err){
-                    reject(err);
-                } else {
-                    resolve(data);
-                }
-            })
-        })    
+        console.log(1)
+        return await this.redisClient.hGet(tokenKey(userId), 'token')
     }
+
+
+    // 유저 수정 
+    updateUserInfo = async (email, name, phone_Number, career, intro, age, gender, imageUrl
+      ) => {
+        return await this.prisma.sitters.update({
+          where: { email: email },
+          data: {
+            name,
+            phone_Number,
+            career: +career,
+            intro,
+            age: +age,
+            gender: gender.toUpperCase(),
+            profile_Image: imageUrl,
+          },
+        });
+      };
+    
 }

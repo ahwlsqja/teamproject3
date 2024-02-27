@@ -16,11 +16,11 @@ export class SittersRepository {
     const token = Math.floor(Math.random() * 900000) + 100000;
     const sitter = await this.prisma.sitters.create({
       data: {
-        email,
+        email: email,
         password: hashedPassword,
-        name,
-        phone_Number,
-        intro,
+        name: name,
+        phone_Number: phone_Number,
+        intro: intro,
         age: +age,
         gender: gender.toUpperCase(),
         career: +career,

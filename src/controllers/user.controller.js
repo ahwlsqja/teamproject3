@@ -1,3 +1,4 @@
+
 export class Userscontroller {
     constructor(usersService){
         this.usersService = usersService;
@@ -62,7 +63,7 @@ export class Userscontroller {
         try{
             const { refreshToken } = req.cookies; 
             const tokens = await this.usersService.refreshToken(refreshToken);
-            res.cookie('accessToken', `Bearer ${tokens.newToken}`)
+            res.cookie('accessToken', `Bearer ${tokens.accessToken}`)
             res.cookie('refreshToken',`Bearer ${tokens.newRefreshToken}`)
             
             return res.status(200).json({ message: '새로운 토큰 재발급에 성공했습니다.'});
@@ -71,9 +72,33 @@ export class Userscontroller {
         }
     }
 
-    // 유저 조회
-    
+    // 유저 상세 조회
+    findUserByEmail = async (req, res, next) => {
+        try{
+            const { email } = req.body;
+            if(!email){
+                return res.status(400).json({ message: "이메일을 입력해주세요."})
+            }
+            const userDetail = await this.usersService.findUserByEmail(email)
+
+            return res.status(200).json({data: userDetail })
+            } catch(err){
+                next(err);
+            }
+        }
 
 
+    // 유저 목록 조회
+    findList = async (req, res, next) => {
+        try{
+            const foundList = await this.usersService.findList()
+            return res.status(200).json({ data: foundList })
+        } catch(err){
+            next(err)
+        }
     }
+
+
+
+}
 

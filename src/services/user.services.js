@@ -73,10 +73,19 @@ export class UsersService {
             throw new Error('리프레쉬 토큰이 없습니다.');
         }
         try{
+            console.log(refreshToken)
             // userId 뱉음 jwt.verify가
-            const { userId } = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+            const [ tokenType, token ] = refreshToken.split(' ');
+            const { userId } = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+            console.log(userId)
+            
+            console.log(1234)
             const savedRefreshToken = await this.usersRepository.getToken(userId);
-            if(refreshToken !== savedRefreshToken){
+            console.log(123234)
+            console.log(savedRefreshToken)
+            console.log(123424)
+
+            if(token !== savedRefreshToken){
                 throw new Error("리프레쉬 토큰이 유효하지 않습니다.")
             };
             
@@ -94,23 +103,41 @@ export class UsersService {
     // 유저 상세 조회
     findUserByEmail = async (email) => {
         const user = await this.usersRepository.findUserByEmail(email);
-  
-    return {
-      userId: user.userId,
-      email: user.email,
-      name: user.name,
-      age: user.age,
-      gender: user.gender,
-      intro: user.intro,
-      pets: {
-        select: {
-          petId: true,
-          name: true,
-          pettype: true,
-        },
-      },
-    };
-  };
+        if(!user){
+            throw new Error('해당하는 이메일이 없습니다.')
+        }
+        return {
+            userId: user.userId,
+            email: user.email,
+            name: user.name,
+            age: user.age,
+            gender: user.gender,
+            intro: user.intro,
+            pets: {
+                select: {
+                    petId: true,
+                    name: true,
+                    pettype: true,
+                    },
+                },
+            };
+        };
+
+    // 유저 목록 조회
+    findList = async () => {
+        return await this.usersRepository.findList()
+    }
+
+//     // 유저 정보 수정
+//     updateUserInfo = async( email, password, name, phone_Number, career, intro, age, gender, imageUrl) =>{
+//         const user = await this.usersRepository.findUserByEmail(email)
+//         if(!user){
+//             throw new Error("해당하는 유저가 없습니다.");
+//         }
+//         if(password !== usre)
+        
+
+//     }
+// };
+
 }
-
-
