@@ -6,8 +6,10 @@ export class Userscontroller {
     // 회원가입
     signUp = async(req, res, next) => {
         try{
-            const { email, password, confirmpassword, name ,phone_number, intro, age, gender } = req.body;
-            if(!email || !password || !confirmpassword || !name || !phone_number || gender){
+            const { email, password, confirmpassword, name, phone_Number, intro, age, gender } = req.body;
+            const imageUrl = req.file.Location;
+            console.log(imageUrl)
+            if(!email || !password || !confirmpassword || !name || !phone_Number){
                 return res.status(400).json({message: "필수 입력칸을 모두 채워주세요"})
             }
             if(password.length < 6){
@@ -17,10 +19,9 @@ export class Userscontroller {
             if(password !== confirmpassword){
                 return res.status(400).json({ message: "비밀번호가 일치하지 않습니다."});        
             }
+            const user = await this.usersService.signUp(email, password, name, phone_Number, intro, age, gender, imageUrl)
 
-            const user = await this.usersService.signUp(email, password, name, phone_number, intro, age, gender)
-
-            return res.status(201).json(user);
+            return res.status(201).json({data: user});
         } catch(err) {
             next(err);
         }
@@ -28,7 +29,7 @@ export class Userscontroller {
 
 
     // 이메일 인증
-    verifySignUp = async ( email, verifiedusertoken ) => {
+    verifySignUp = async ( req, res, next ) => {
         try{
             const { email, verifiedusertoken } = req.body;
             await this.usersService.verifySignUp(email, verifiedusertoken);

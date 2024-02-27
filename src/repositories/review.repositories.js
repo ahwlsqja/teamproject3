@@ -1,4 +1,4 @@
-import { prisma } from "../routes/index.js";
+import { Prisma } from "@prisma/client";
 
 export class ReviewsRepository {
   constructor(prisma) {
@@ -9,14 +9,6 @@ export class ReviewsRepository {
     return await this.prisma.users.findFirst({
       where: {
         userId: +userId,
-      },
-    });
-  };
-  // 아이디로 시터찾기
-  findSitterById = async (sitterId) => {
-    return await this.prisma.sitters.findFirst({
-      where: {
-        sitterId: +sitterId,
       },
     });
   };
@@ -46,15 +38,15 @@ export class ReviewsRepository {
   };
 
   // 댓글 수정
-  updateReview = async (reviewid, title, content, sitterId) => {
+  updateReview = async (reviewid, title, content, star) => {
     const updatedReview = await prisma.reviews.update({
       where: {
         reviewid: +reviewid,
       },
       data: {
-        sitterId,
         title,
         content,
+        star,
       },
     });
 
@@ -68,5 +60,35 @@ export class ReviewsRepository {
         reviewid: +reviewid,
       },
     });
+  };
+
+  // 목록 조회(평점순 내림차순)
+  findManySitterDesc = async () => {
+    const reviewsList = await this.prisma.reviews.groupBy({
+      by: ["sitterId"],
+      _avg: {
+        star: true,
+      },
+    });
+
+    // 별점 평균 내림차순으로 정렬합니다.
+    const sortedReviews = reviewsList.sort((a, b) => b._avg.star - a._avg.star);
+
+    return sortedReviews;
+  };
+
+  // 목록 조회(평점순 오름차순)
+  findManySitterAsc = async () => {
+    const reviewsList = await this.prisma.reviews.groupBy({
+      by: ["sitterId"],
+      _avg: {
+        star: true,
+      },
+    });
+
+    // 별점 평균 내림차순으로 정렬합니다.
+    const sortedReviews = reviewsList.sort((a, b) => a._avg.star - b._avg.star);
+
+    return sortedReviews;
   };
 }

@@ -1,4 +1,5 @@
 import { ReviewsService } from "../services/review.services.js";
+
 export class ReviewsController {
   constructor(reviewsService) {
     this.reviewsService = reviewsService;
@@ -15,6 +16,10 @@ export class ReviewsController {
         return res
           .status(400)
           .json({ message: "모든 입력칸을 입력해주세요. " });
+      }
+
+      if (!(1 <= star <= 5)) {
+        throw new error("평점은 1~5점 사이에서만 작성이 가능합니다.");
       }
 
       const createdReview = await this.reviewsService.createReview(
@@ -39,13 +44,17 @@ export class ReviewsController {
   updateReview = async (req, res, next) => {
     try {
       const { reviewId } = req.params;
-      const { password, title, content, sitterId, star } = req.body;
+      const { password, title, content, star } = req.body;
       const { userId } = req.user;
 
-      if (!title || !content || !password || !sitterId || !star) {
+      if (!title || !content || !password || !star) {
         return res
           .status(400)
           .json({ message: "모든 입력칸을 입력해주세요. " });
+      }
+
+      if (!(1 <= star <= 5)) {
+        throw new error("평점은 1~5점 사이에서만 작성이 가능합니다.");
       }
 
       const updatedReview = await this.reviewsService.updateReview(
@@ -53,9 +62,8 @@ export class ReviewsController {
         password,
         title,
         content,
-        sitterId,
-        userId,
-        star
+        star,
+        userId
       );
 
       return res.status(200).json({
@@ -87,6 +95,25 @@ export class ReviewsController {
       );
 
       return res.status(200).json({ data: deletedReview });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  // 특정 시터 평점 평균
+  sitterExpert = async (req, res, next) => {
+    try {
+      const { sitterId } = req.params;
+
+      if (!sitterId) {
+        return res
+          .status(400)
+          .json({ message: "모든 입력칸을 입력해주세요. " });
+      }
+
+      const sitterExperted = await this.reviewsService.sitterExpert(sitterId);
+
+      return res.status(200).json({ data: sitterExperted });
     } catch (err) {
       next(err);
     }

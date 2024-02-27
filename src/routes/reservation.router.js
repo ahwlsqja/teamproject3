@@ -6,6 +6,8 @@ import { ReservationsService } from '../services/reservation.services.js';
 import { ReservationsRepository } from '../repositories/reservation.repositories.js';
 import authMiddleware from '../middlewares/auth.middleware.js';
 import authMiddlewareSitter from '../middlewares/auth.middleware.sitter.js';
+import { redisClient } from '../redis/client.js';
+
 
 
 const router = express.Router();
@@ -34,5 +36,8 @@ router.put('/update/:reservationId', authMiddleware, reservationsController.upda
 
 // 시터 예약 수락 API
 router.put('/accepted/:reservationId', authMiddlewareSitter, reservationsController.ReservationAcceptBySitter) 
+
+// 시터 예약 거절 API
+router.put('/rejected/:reservationId', authMiddlewareSitter, reservationsController.ReservationRejectBySitter)
 
 export default router

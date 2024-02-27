@@ -11,6 +11,7 @@ export class UsersRepository {
     findUserByEmail = async (email) => {
         return await this.prisma.users.findFirst({
             where: { email: email }
+
         });
     }
 
@@ -41,31 +42,27 @@ export class UsersRepository {
             }
         })
     }
-    createUser = async (email, hashedPassword, name, phone_number, intro, age, gender) => {
-        const imageUrl = req.file.Location;
+
+    createUser = async (email, hashedPassword, name, phone_Number, intro, age, gender, imageUrl) => {
         const token = Math.floor(Math.random() * 900000) + 100000;
-        const [user] = await this.prisma.$transaction(async(tx) => {
-            const user = await tx.users.create({
-                data: {
-                    email,
-                    password: hashedPassword,
-                    name,
-                    phone_number,
-                    intro,
-                    age,
-                    gender,
-                    user_status: "nonpass",
-                    email_verified: token.toString(),
-                    profile_image: imageUrl,
+        const user = await this.prisma.users.create({
+             data: {
+                email: email,
+                password: hashedPassword,
+                name: name,
+                phone_Number: phone_Number,
+                intro: intro,
+                age: +age,
+                gender: gender,
+                user_status: "nonpass",
+                emailTokens: token.toString(),
+                profile_Image: imageUrl,
                 }
             });
 
             await emailVerificationMiddleware(email, token);
-            return [ user ]
-        },{
-            isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted
-        });
-    }  
+            return user 
+    };  
         
         
 
