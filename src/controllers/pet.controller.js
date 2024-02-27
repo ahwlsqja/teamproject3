@@ -5,16 +5,26 @@ export class PetController {
 
   createPet = async (req, res, next) => {
     try {
-      const { userId }  = res.user;
-      const { pet_Image } = res.file.Location;
-      const { name, petType, age } = req.body;
-      const createdPet = await this.petService.createPet({
+      const { userId }  = req.user;
+      const imageUrl = req.file.Location;
+      const { namePet, petType, age } = req.body;
+
+      console.log('s1', userId);
+      if (!namePet || !petType || !age || !imageUrl) {
+          return res.status(400).json({ message: "필수값이 없습니다."});
+      }
+
+      if (!["dog", "cat", "others"].includes(petType.toLowerCase())) {
+        return res.status(400).json({ message: "petType 없습니다."});
+      }
+
+      const createdPet = await this.petService.createPet(
         userId,
-        name,
+        namePet,
         petType,
-        pet_Image,
         age,
-      });
+        imageUrl
+      );
       return res.status(201).json({ data: createdPet });
     } catch (error) {
       next(error);

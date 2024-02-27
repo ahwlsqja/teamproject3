@@ -23,7 +23,6 @@ export class SittersController {
       if (
         !email ||
         !password ||
-        !confirmpassword ||
         !name ||
         !phone_Number ||
         !career ||
@@ -48,7 +47,7 @@ export class SittersController {
       }
 
       //성별 값이 있는데 enum문자열이 아니면 에러
-      if (gender && !["MALE", "FEMALE"].includes(gender.toLowerCase())) {
+      if (!["MALE", "FEMALE"].includes(gender.toUpperCase())) {
         return res.status(400).json({ message: "성별을 바르게 입력해주세요." });
       }
 

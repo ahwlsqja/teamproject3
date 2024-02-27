@@ -18,22 +18,22 @@ const petController = new PetController(petService);
 const router = express.Router();
 
 // 펫 생성 API
-router.post("/pet", uploadPetImage, petController.createPet);
-
+router.post("/pet", authMiddleware, uploadPetImage, petController.createPet);
+ 
 // 펫 1마리 조회하기 API(유저입장)
-router.get("/pet/:petId", authMiddleware, petController.findOnePet);
+router.get("/:petId", authMiddleware, petController.findOnePet);
 
 // 유저의 모든펫 조회하기 (제 3자 입장에서)
-router.get("/pet/:userId", petController.findUserPets);
+router.get("/:userId", petController.findUserPets);
 
 // 펫 정보 수정하기 (유저 입장)
-router.put("/pet/:petId", authMiddleware, uploadPetImage, petController.updatePetInfo);
+router.put("/:petId", authMiddleware, uploadPetImage, petController.updatePetInfo);
 
 // 펫 정보 삭제하기 (유저 입장)
-router.delete("/pet/:petId", authMiddleware,  petController.deletePetInfo);
+router.delete("/:petId", authMiddleware,  petController.deletePetInfo);
 
 // 종류별 펫 찾기 (제 3자 입장)
-router.get("/pet/:petType", petController.findPetByPetType)
+router.get("/:petType", petController.findPetByPetType)
 
 export default router; 
 

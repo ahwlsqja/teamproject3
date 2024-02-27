@@ -5,14 +5,18 @@ export class PetRepository {
   }
 
   // 펫 등록하기
-  createPet = async ({ userId, name, petType, age, pet_Image }) => {
+  createPet = async (userId, namePet, petType, age, imageUrl) => {
     const createdPet = await this.prisma.pets.create({
       data: {
-        userId,
-        name,
-        petType,
-        age,
-        pet_Image,
+        namePet: namePet,
+        petType: petType,
+        age: +age,
+        pet_Image: imageUrl,
+        user: {
+          connect: {
+            userId: +userId,
+          }
+        }
       },
     });
     return createdPet;
