@@ -14,20 +14,21 @@ datasource db {
 }
 
 model Users {
-  userId    Int      @id @default(autoincrement()) @map("userId")
-  email     String   @unique @map("email")
-  password  String   @map("password")
-  createdAt DateTime @default(now()) @map("createdAt")
-  updatedAt DateTime @updatedAt @map("updatedAt")
-  name      String   @map("name")
-  intro      String?   @map("intro")
-  emailTokens String? @map("emailTokens")
-  profile_Image String? @map("profile_Image")
-  age           Int? @map("age")
-  gender        Gender @map("gender")
-  user_status User_Status @default(nonpass)
-  reviews Reviews[]
-  pets Pets[]
+  userId        Int         @id @default(autoincrement()) @map("userId")
+  email         String      @unique @map("email")
+  password      String      @map("password")
+  createdAt     DateTime    @default(now()) @map("createdAt")
+  updatedAt     DateTime    @updatedAt @map("updatedAt")
+  name          String      @map("name")
+  intro         String?     @map("intro")
+  emailTokens   String?     @map("emailTokens")
+  profile_Image String?     @map("profile_Image")
+  age           Int?        @map("age")
+  gender        Gender      @map("gender")
+  user_status   User_Status @default(nonpass)
+  reviews       Reviews[]
+  pets          Pets[]
+
   @@map("Users")
 }
 
@@ -56,29 +57,29 @@ model Reviews {
   @@map("Reviews")
 }
 
-
 model Sitters {
-  sitterId       Int            @id @default(autoincrement()) @map("sitterId")
-  email          String         @map("email")
-  name           String         @map("name") @db.VarChar(50)
-  profile_Image  String?        @map("profile_Image")
-  email_verified Int            @map("email_verified")
-  phone_Number   String         @map("phone_Number")
-  password       Int            @map("password")
-  createdAt      DateTime       @default(now()) @map("createdAt")
-  updatedAt      DateTime       @updatedAt @map("updatedAt")
-  career         Int            @map("career")
-  sitter_Status  Sitter_Status  @default(nonpass)     
-  intro          String?        @map("intro")
-  age            Int?           @map("age")
-  gender         Gender         @map("gender")
-  adrress_Sitters Adrress_Sitters   @map("Adrress_Sitters")
-  ablePetType    Ablepettype    @map("ablepettype")
-  reservations   Reservations[]
-  reviews        Reviews[]
+  sitterId        Int             @id @default(autoincrement()) @map("sitterId")
+  email           String          @map("email")
+  name            String          @map("name") @db.VarChar(50)
+  profile_Image   String?         @map("profile_Image")
+  email_verified  Int             @map("email_verified")
+  phone_Number    String          @map("phone_Number")
+  password        Int             @map("password")
+  createdAt       DateTime        @default(now()) @map("createdAt")
+  updatedAt       DateTime        @updatedAt @map("updatedAt")
+  career          Int             @map("career")
+  sitter_Status   Sitter_Status   @default(nonpass)
+  intro           String?         @map("intro")
+  age             Int?            @map("age")
+  gender          Gender          @map("gender")
+  adrress_Sitters Adrress_Sitters @map("Adrress_Sitters")
+  ablePetType     Ablepettype     @map("ablepettype")
+  reservations    Reservations[]
+  reviews         Reviews[]
 
   @@map("Sitters")
 }
+
 enum Adrress_Sitters {
   seoul
   gyeonggi
@@ -92,12 +93,10 @@ enum Adrress_Sitters {
   jeju
 }
 
-
 enum Sitter_Status {
   pass
   nonpass
 }
-
 
 enum Ablepettype {
   dog
@@ -124,11 +123,12 @@ enum TASKSTATUS {
 }
 
 model ReservationPet {
-  reservationPetId Int          @id @default(autoincrement())
+  reservationPetId Int @id @default(autoincrement())
   petId            Int
   Id               Int
-  reservations     Reservations @relation(fields: [Id], references: [Id], onDelete: Cascade)
-  pets             Pets         @relation(fields: [petId], references: [petId], onDelete: Cascade)
+
+  reservations Reservations @relation(fields: [Id], references: [Id], onDelete: Cascade)
+  pets         Pets         @relation(fields: [petId], references: [petId], onDelete: Cascade)
 }
 
 model Pets {
