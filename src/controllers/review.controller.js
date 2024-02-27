@@ -14,6 +14,10 @@ export class ReviewsController {
         return res.status(400).json({ message : "모든 입력칸을 입력해주세요. "});
       }
 
+      if(!(1 <= star <= 5)){
+        return res.status(400).json({ message : "모든 입력칸을 입력해주세요. "});
+      }
+
       const createdReview = await this.reviewsService.createReview(
         userId, 
         title, 
@@ -43,6 +47,10 @@ export class ReviewsController {
         return res.status(400).json({ message : "모든 입력칸을 입력해주세요. "});
       }
 
+      if(!(1 <= star <= 5)){
+        return res.status(400).json({ message : "모든 입력칸을 입력해주세요. "});
+      }
+      
       const updatedReview = await this.reviewsService.updateReview(
         reviewId, 
         password, 

@@ -63,7 +63,7 @@ model Sitters {
   email          String         @map("email")
   name           String         @map("name") @db.VarChar(50)
   profile_Image  String?        @map("profile_Image")
-  email_verified Int            @map("email_verified")
+  emailTokens    String?            @map("emailTokens")
   phone_Number   String         @map("phone_Number")
   password       Int            @map("password")
   createdAt      DateTime       @default(now()) @map("createdAt")
@@ -73,14 +73,14 @@ model Sitters {
   intro          String?        @map("intro")
   age            Int?           @map("age")
   gender         Gender         @map("gender")
-  adrress_Sitters Adrress_Sitters   @map("Adrress_Sitters")
+  address_Sitters Address_Sitters   @map("Adrress_Sitters")
   ablePetType    Ablepettype    @map("ablepettype")
   reservations   Reservations[]
   reviews        Reviews[]
 
   @@map("Sitters")
 }
-enum Adrress_Sitters {
+enum Address_Sitters {
   seoul
   gyeonggi
   gangwon

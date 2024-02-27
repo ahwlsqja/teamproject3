@@ -9,8 +9,10 @@ import { Upload } from "@aws-sdk/lib-storage";
 
 
 const s3 = new S3Client({
-    accessKeyId: process.env.ACCESSKEY_ID,
-    secretAccessKey: process.env.SECRETACCESSKEY,
+    credentials: {
+      accessKeyId: process.env.ACCESSKEY_ID,
+      secretAccessKey: process.env.SECRETACCESSKEY,
+    },
     region: 'ap-northeast-2'
   });
 
@@ -25,6 +27,9 @@ const uploadUserImage = async (req, res, next) => {
             if(error){
                 reject(res.status(500).json({ message: error.message }));
             }
+            console.log(process.env.ACCESSKEY_ID)
+            console.log(process.env.SECRETACCESSKEY)
+
             console.log(req.file);
             const fileStream = fs.createReadStream(req.file.path);
 
