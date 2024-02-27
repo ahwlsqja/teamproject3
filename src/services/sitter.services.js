@@ -8,7 +8,42 @@ export class SittersService {
     constructor(sittersRepository){
         this.sittersRepository = sittersRepository;
     }
+    //회원가입
+  signUp = async (
+    email,
+    password,
+    name,
+    phone_number,
+    career,
+    adrress_Sitter,
+    ablePetType,
+    profile_Image,
+    intro,
+    age,
+    gender
+  ) => {
+    const isExistSitter = await this.sittersRepository.findSitterByEmail(email);
+    if (!isExistSitter) {
+      throw new Error("이미 시터로 가입한 이메일입니다.");
+    }
 
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const sitter = await this.sittersRepository.createSitter(
+      email,
+      hashedPassword,
+      name,
+      phone_number,
+      career,
+      adrress_Sitter,
+      ablePetType,
+      profile_Image,
+      intro,
+      age,
+      gender
+    );
+
+    return sitter;
+  };
 
 
 

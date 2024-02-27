@@ -22,7 +22,7 @@ export const emailVerificationMiddleware = (email, token) => {
             subject: '이메일 인증을 위한 메일입니다',
             html: `<p>귀하의 인증 코드는 다음과 같습니다: ${token}</p>`
         };
-
+        
         transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
                 console.log(error);
@@ -32,7 +32,7 @@ export const emailVerificationMiddleware = (email, token) => {
                 return { message: '인증코드메일을 발송했습니다.' };
             }
         });
-        return res.status(201).json({ message: '인증코드메일을 발송했습니다. '});
+        return { message: '인증코드메일을 발송했습니다. '};
     } catch(err) {
         console.error(err);
         return { error: '이메일 전송 중 오류가 발생했습니다.' };

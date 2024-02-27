@@ -31,7 +31,7 @@ findManyBySitter = async() => {
  }
 
 
- // 아이디로 시터찾아서 특정 필드만 가져오기
+ // 아이디로 시터찾아서 특정 필드만 
  getSitterBySitterId = async (sitterId) => {
     return await this.prisma.sitters.findFirst({
       where: { sitterId: +sitterId },
@@ -43,7 +43,7 @@ findManyBySitter = async() => {
         career: true,
         local: true,
         ablepettype: true,
-        profile_image: true,
+        profile_Image: true,
         intro: true,
         age: true,
         gender: true,
@@ -62,17 +62,8 @@ findManyBySitter = async() => {
   }
 
 
-  createSitter = async (
-    email,
-    hashedPassword,
-    name,
-    phone_number,
-    career,
-    adrress_Sitter,
-    ablepettype,
-    intro,
-    age,
-    gender, imageUrl) => {
+  createSitter = async (email, hashedPassword, name, phone_number,
+    career, adrress_Sitter, ablepettype, intro, age, gender, imageUrl) => {
     const token = Math.floor(Math.random() * 900000) + 100000;
     await tx.sitters.create({
       data: {
@@ -88,7 +79,7 @@ findManyBySitter = async() => {
         ablepettype,
         sitter_Status: "nonpass",
         email_verified: token.toString(),
-        profile_image: imageUrl,
+        profile_Image: imageUrl,
       },
     })
   };
@@ -138,10 +129,38 @@ findManyBySitter = async() => {
         career: true,
         adrress_Sitter: true,
         ablepettype: true,
-        profile_image: true,
+        profile_Image: true,
         intro: true,
       },
       orderBy: [{ [orderKey]: orderValue.toLowerCase() }],
+    });
+  };
+
+
+
+  updateSitterInfo = async (
+    email,
+    name,
+    phone_number,
+    career,
+    intro,
+    age,
+    gender,
+    adrress_Sitter,
+    ablePetType
+  ) => {
+    return await this.prisma.sitters.update({
+      where: { email: email },
+      data: {
+        name,
+        phone_number,
+        career,
+        intro,
+        age,
+        gender,
+        adrress_Sitter,
+        ablePetType,
+      },
     });
   };
 }

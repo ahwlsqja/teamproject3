@@ -8,8 +8,7 @@ export class UsersService {
     }
 
     // 회원가입
-    signUp = async (email, password, name, phone_number, intro, age, gender, imageUrl) => {
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+    signUp = async (email, password, name, phone_Number, intro, age, gender, imageUrl) => {
 
         const isExistUser = await this.usersRepository.findUserByEmail(email);
         if(isExistUser){
@@ -18,12 +17,7 @@ export class UsersService {
 
         
         const hashedPassword = await bcrypt.hash(password, 10);
-        const user = await this.usersRepository.createUser(email, hashedPassword, name, phone_number, intro, age, gender);
-        try{
-            await sendTodayData();
-        } catch(err) {
-            next(err);
-        }
+        const user = await this.usersRepository.createUser(email, hashedPassword, name, phone_Number, intro, age, gender, imageUrl);
 
         
         return user;
