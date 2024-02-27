@@ -1,6 +1,6 @@
 import { emailVerificationMiddleware } from "../middlewares/emailVerification.middleware.js";
 import { tokenKey } from "../redis/keys.js";
-import { PETTYPE, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 export class SittersRepository {
   constructor(prisma, redisClient) {
@@ -8,29 +8,22 @@ export class SittersRepository {
     this.redisClient = redisClient;
   }
 
-  //이메일로 시터 모든 정보 불러옴
-  findSitterByEmail = async (email) => {
-    return await this.prisma.sitters.findFirst({
-      where: { email: email },
-    });
-  };
-
-  //시터 계정 만들기
+  // 시터 계정 생성
   createSitter = async (
     email,
     hashedPassword,
     name,
     phone_Number,
     career,
-    adrress_Sitter,
-    ablepettype,
+    address_Sitters,
+    ablePetType,
     intro,
     age,
     gender,
     imageUrl
   ) => {
     const token = Math.floor(Math.random() * 900000) + 100000;
-    await this.prisma.sitters.create({
+    const sitter = await this.prisma.sitters.create({
       data: {
         email,
         password: hashedPassword,
@@ -40,16 +33,15 @@ export class SittersRepository {
         age,
         gender,
         career,
-        adrress_Sitter,
-        ablepettype,
+        address_Sitters,
+        ablePetType,
         sitter_Status: "nonpass",
-        email_verified: token.toString(),
-        profile_image: imageUrl,
+        emailTokens: token.toString(),
+        profile_Image: imageUrl,
       },
     });
-
     await emailVerificationMiddleware(email, token);
-    return;
+    return sitter;
   };
 
   //시터 상태 업데이트(이메일 인증시)
@@ -78,16 +70,71 @@ export class SittersRepository {
     });
   };
 
-  //시터 목록조회(경력순 정렬)
+  // 이메일로 시터찾기
+  findSitterByEmail = async (email) => {
+    return await this.prisma.sitters.findFirst({
+      where: { email: email },
+    });
+  };
+
+  // 아이디로 시터찾기
+  findSitterById = async (sitterId) => {
+    return await this.prisma.sitters.findFirst({
+      where: {
+        sitterId: +sitterId,
+      },
+    });
+  };
+
+  // 한번에 많은 시터 찾기
+  findManyBySitter = async () => {
+    return await this.prisma.sitters.findMany();
+  };
+
+  // 아이디로 시터찾아서 특정 필드만
+  getSitterBySitterId = async (sitterId) => {
+    return await this.prisma.sitters.findFirst({
+      where: { sitterId: +sitterId },
+      select: {
+        sitterId: true,
+        email: true,
+        name: true,
+        phone_Number: true,
+        career: true,
+        address_Sitters: true,
+        ablePetType: true,
+        profile_Image: true,
+        intro: true,
+        age: true,
+        gender: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+  };
+
+  // 펫 종류로 시터 찾기
+  getSittersBypetType = async (ablePetType) => {
+    return await this.prisma.sitters.findMany({
+      where: { ablePetType: ablePetType },
+    });
+  };
+  // 시터 주소로 시터 찾기
+  getSittersByAddress = async (address_Sitters) => {
+    return await this.prisma.sitters.findMany({
+      where: { address_Sitters: address_Sitters },
+    });
+  };
+
   getSitterList = async (orderKey, orderValue) => {
     return await this.prisma.sitters.findMany({
       select: {
         sitterId: true,
         name: true,
         career: true,
-        adrress_Sitter: true,
-        ablepettype: true,
-        profile_image: true,
+        address_Sitters: true,
+        ablePetType: true,
+        profile_Image: true,
         intro: true,
       },
       orderBy: [{ [orderKey]: orderValue.toLowerCase() }],
@@ -139,7 +186,7 @@ export class SittersRepository {
     intro,
     age,
     gender,
-    adrress_Sitter,
+    address_Sitters,
     ablePetType
   ) => {
     await this.prisma.sitters.update({
@@ -151,11 +198,10 @@ export class SittersRepository {
         intro,
         age,
         gender,
-        adrress_Sitter,
+        address_Sitters,
         ablePetType,
       },
     });
-    return;
   };
 
   //시터 회원 탈퇴
@@ -164,33 +210,5 @@ export class SittersRepository {
       where: { email: email },
     });
     return;
-  };
-
-  // 아이디로 시터정보 다 불러오기
-  findSitterById = async (sitterId) => {
-    return await this.prisma.sitters.findFirst({
-      where: {
-        sitterId: +sitterId,
-      },
-    });
-  };
-
-  //시터정보 전체 다 불러오기
-  findManyBySitter = async () => {
-    return await this.prisma.sitters.findMany();
-  };
-
-  //ablePetType으로 필터해서 가져오는 시터목록
-  getSittersBypetType = async (ablePetType) => {
-    return await this.prisma.sitters.findMany({
-      where: { ablePetType: ablePetType },
-    });
-  };
-
-  //adrress_Sitters으로 필터해서 가져오는 시터목록
-  getSittersByAddress = async (adrress_Sitters) => {
-    return await this.prisma.sitters.findMany({
-      where: { adrress_Sitters: adrress_Sitters },
-    });
   };
 }

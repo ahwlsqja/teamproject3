@@ -2,7 +2,6 @@ export class SittersController {
   constructor(sittersService) {
     this.sittersService = sittersService;
   }
-
   //시터 회원가입
   signUp = async (req, res, next) => {
     try {
@@ -13,13 +12,14 @@ export class SittersController {
         name,
         phone_Number,
         career,
-        adrress_Sitter,
+        address_Sitters,
         ablePetType,
         intro,
         age,
         gender,
       } = req.body;
 
+      const imageUrl = req.file.Location;
       if (
         !email ||
         !password ||
@@ -27,7 +27,7 @@ export class SittersController {
         !name ||
         !phone_Number ||
         !career ||
-        !adrress_Sitter ||
+        !address_Sitters ||
         !ablePetType
       ) {
         return res
@@ -48,7 +48,7 @@ export class SittersController {
       }
 
       //성별 값이 있는데 enum문자열이 아니면 에러
-      if (gender && !["MALE", "FEMALE"].includes(gender.toUpperCase())) {
+      if (gender && !["MALE", "FEMALE"].includes(gender.toLowerCase())) {
         return res.status(400).json({ message: "성별을 바르게 입력해주세요." });
       }
 
@@ -72,7 +72,7 @@ export class SittersController {
           "gyeongbuk",
           "gyeongnam",
           "jeju",
-        ].includes(adrress_Sitter.toLowerCase())
+        ].includes(address_Sitters.toLowerCase())
       ) {
         return res
           .status(400)
@@ -85,11 +85,12 @@ export class SittersController {
         name,
         phone_Number,
         career,
-        adrress_Sitter,
+        address_Sitters,
         ablePetType,
         intro,
         age,
-        gender
+        gender,
+        imageUrl
       );
 
       return res.status(201).json({
@@ -222,7 +223,7 @@ export class SittersController {
         intro,
         age,
         gender,
-        adrress_Sitter,
+        address_Sitters,
         ablePetType,
       } = req.body;
       const { email } = req.sitter; //이메일주소로 받아야함
@@ -241,7 +242,7 @@ export class SittersController {
 
       //adrress_Sitter값이 있는데 enum문자열이 아니면 에러
       if (
-        adrress_Sitter &&
+        address_Sitters &&
         ![
           "seoul",
           "gyeonggi",
@@ -253,7 +254,7 @@ export class SittersController {
           "gyeongbuk",
           "gyeongnam",
           "jeju",
-        ].includes(adrress_Sitter.toLowerCase())
+        ].includes(address_Sitters.toLowerCase())
       ) {
         return res
           .status(400)
@@ -279,7 +280,7 @@ export class SittersController {
         intro,
         age,
         gender,
-        adrress_Sitter,
+        address_Sitters,
         ablePetType
       );
 
@@ -294,8 +295,7 @@ export class SittersController {
   //시터 회원탈퇴
   deleteSitterSelf = async (req, res, next) => {
     try {
-      const { password } = req.body;
-      const { email } = req.sitter;
+      const { email, password } = req.body;
 
       await this.sittersService.deleteSitterSelf(password, email);
 
@@ -331,9 +331,9 @@ export class SittersController {
 
   //adrress_Sitters으로 필터해서 가져오는 시터목록
   getSittersByAddress = async (req, res, next) => {
-    const { adrress_Sitters } = req.query;
+    const { address_Sitters } = req.query;
     try {
-      if (!adrress_Sitters) {
+      if (!address_Sitters) {
         return res.status(400).json({ message: "주소를 선택 해주세요." });
       }
 
@@ -349,13 +349,13 @@ export class SittersController {
           "gyeongbuk",
           "gyeongnam",
           "jeju",
-        ].includes(adrress_Sitters.toLowerCase())
+        ].includes(address_Sitters.toLowerCase())
       ) {
         return res.status(400).json({ message: "주소 선택이 바르지 않습니다" });
       }
 
       const filleredSittersByAddress =
-        await this.sittersService.getSittersByAddress(adrress_Sitters);
+        await this.sittersService.getSittersByAddress(address_Sitters);
       return res.status(200).json({ data: filleredSittersByAddress });
     } catch (err) {
       next(err);

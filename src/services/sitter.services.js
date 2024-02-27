@@ -1,7 +1,6 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import "dotenv/config.js";
-import { uploadUserImage } from "../middlewares/image.middleware.js";
 
 export class SittersService {
   constructor(sittersRepository) {
@@ -15,7 +14,7 @@ export class SittersService {
     name,
     phone_Number,
     career,
-    adrress_Sitter,
+    address_Sitters,
     ablePetType,
     intro,
     age,
@@ -33,7 +32,7 @@ export class SittersService {
       name,
       phone_Number,
       career,
-      adrress_Sitter,
+      address_Sitters,
       ablePetType,
       intro,
       age,
@@ -50,7 +49,7 @@ export class SittersService {
       throw new Error("인증번호가 없습니다.");
     }
 
-    if (verifiedusertoken !== sitter.email_verified) {
+    if (verifiedusertoken !== sitter.emailTokens) {
       throw new Error("실패했습니다.");
     }
     await this.sittersRepository.updateSitterVerificationStatus(
@@ -132,7 +131,7 @@ export class SittersService {
     return sitters;
   };
 
-  //시터상세정보조회(sitterId로)
+  // 특정 시터의 상세 조회
   getSitterBySitterId = async (sitterId) => {
     const sumofSitterGrade = await this.sittersRepository.findManySitterId(
       sitterId
@@ -162,7 +161,7 @@ export class SittersService {
     intro,
     age,
     gender,
-    adrress_Sitter,
+    address_Sitters,
     ablePetType
   ) => {
     const sitter = await this.sittersRepository.findSitterByEmail(email);
@@ -180,7 +179,7 @@ export class SittersService {
       intro,
       age,
       gender,
-      adrress_Sitter,
+      address_Sitters,
       ablePetType
     );
 
