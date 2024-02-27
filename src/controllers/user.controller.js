@@ -7,6 +7,7 @@ export class Userscontroller {
     signUp = async(req, res, next) => {
         try{
             const { email, password, confirmpassword, name ,phone_number, intro, age, gender } = req.body;
+            const { imageUrl } = req.file.Location;
             if(!email || !password || !confirmpassword || !name || !phone_number || gender){
                 return res.status(400).json({message: "필수 입력칸을 모두 채워주세요"})
             }
@@ -18,7 +19,7 @@ export class Userscontroller {
                 return res.status(400).json({ message: "비밀번호가 일치하지 않습니다."});        
             }
 
-            const user = await this.usersService.signUp(email, password, name, phone_number, intro, age, gender)
+            const user = await this.usersService.signUp(email, password, name, phone_number, intro, age, gender, imageUrl)
 
             return res.status(201).json(user);
         } catch(err) {
@@ -28,7 +29,7 @@ export class Userscontroller {
 
 
     // 이메일 인증
-    verifySignUp = async ( email, verifiedusertoken ) => {
+    verifySignUp = async ( req, res, next ) => {
         try{
             const { email, verifiedusertoken } = req.body;
             await this.usersService.verifySignUp(email, verifiedusertoken);
@@ -47,7 +48,7 @@ export class Userscontroller {
                 return res.status(400).json({ message: "입력칸을 채워주세요."})
             }
             const tokens = await this.usersService.signIn(email, password);
-            res.cookie('authorization', `Bearer ${tokens.token}`);
+            res.cookie('Acesstoken', `Bearer ${tokens.token}`);
             res.cookie('refreshToken', `Bearer ${tokens.refreshToken}`);
             return res.status(200).json({ message:'로그인에 성공하였습니다.', token: tokens.token})
         } catch(err){
