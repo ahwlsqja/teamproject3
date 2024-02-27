@@ -12,14 +12,14 @@ export class ReviewsController {
       const { sitterId } = req.params;
       const { password, title, content, star } = req.body;
 
-      if (!userId || !title || !content || !password || !sitterId || !star) {
+      if (!title || !content || !password || !sitterId || !star) {
         return res
           .status(400)
           .json({ message: "모든 입력칸을 입력해주세요. " });
       }
 
-      if (!(1 <= star <= 5)) {
-        throw new error("평점은 1~5점 사이에서만 작성이 가능합니다.");
+      if (!(1 <= star && star <= 5)) {
+        throw new Error("평점은 1~5점 사이에서만 작성이 가능합니다.");
       }
 
       const createdReview = await this.reviewsService.createReview(
@@ -54,7 +54,7 @@ export class ReviewsController {
       }
 
       if (!(1 <= star <= 5)) {
-        throw new error("평점은 1~5점 사이에서만 작성이 가능합니다.");
+        throw new Error("평점은 1~5점 사이에서만 작성이 가능합니다.");
       }
 
       const updatedReview = await this.reviewsService.updateReview(

@@ -11,17 +11,17 @@ export class ReviewsService {
     const isExistSitter = await this.reviewsRepository.findSitterById(sitterId);
 
     if (!isExistSitter) {
-      throw new error("해당 시터가 존재하지 않습니다.");
+      throw new Error("해당 시터가 존재하지 않습니다.");
     }
     if (!(await bcrypt.compare(password, isExistUser.password))) {
-      throw new error("비밀 번호가 틀렸습니다. 댓글을 작성할 권한이 없습니다.");
+      throw new Error("비밀 번호가 틀렸습니다. 댓글을 작성할 권한이 없습니다.");
     }
 
     const createdReview = await this.reviewsRepository.createReview(
-      sitterId,
       userId,
       title,
       content,
+      sitterId,
       star
     );
 
@@ -34,7 +34,7 @@ export class ReviewsService {
     const Review = await this.reviewsRepository.findReviewById(reviewId);
 
     if (!(await bcrypt.compare(password, isExistUser.password))) {
-      throw new error("비밀 번호가 틀렸습니다. 댓글을 작성할 권한이 없습니다.");
+      throw new Error("비밀 번호가 틀렸습니다. 댓글을 작성할 권한이 없습니다.");
     }
 
     if (!Review) {
@@ -57,7 +57,7 @@ export class ReviewsService {
     const isExistUser = await this.reviewsRepository.findUserById(userId);
 
     if (!(await bcrypt.compare(password, isExistUser.password))) {
-      throw new error("비밀 번호가 틀렸습니다. 댓글을 작성할 권한이 없습니다.");
+      throw new Error("비밀 번호가 틀렸습니다. 댓글을 작성할 권한이 없습니다.");
     }
 
     const review = await this.reviewsRepository.findReviewById(reviewId);
@@ -67,7 +67,7 @@ export class ReviewsService {
     }
 
     if (review.users.id !== userId) {
-      throw new error("댓글을 삭제할 권한이 없습니다.");
+      throw new Error("댓글을 삭제할 권한이 없습니다.");
     }
 
     await this.reviewsRepository.deleteReview(reviewId);
