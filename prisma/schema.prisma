@@ -73,8 +73,8 @@ model Sitters {
   intro          String?        @map("intro")
   age            Int?           @map("age")
   gender         Gender         @map("gender")
-  address_Sitters Address_Sitters   @map("Adrress_Sitters")
-  ablePetType    Ablepettype    @map("ablepettype")
+  address_Sitters Address_Sitters   @map("address_Sitters")
+  ablePetType    Ablepettype    @map("ablePetType")
   reservations   Reservations[]
   reviews        Reviews[]
 
@@ -136,7 +136,7 @@ model Pets {
   petId          Int              @id @default(autoincrement()) @map("petId")
   name           String           @map("name") @db.VarChar(50)
   userId         Int              @map("userId")
-  petType        PETTYPE          @map("pettype")
+  petType        PETTYPE          @map("petType")
   age            Int              @map("age")
   pet_Image      String           @map("pet_Image")
   reservationPet ReservationPet[]
