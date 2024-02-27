@@ -134,11 +134,11 @@ model ReservationPet {
 
 model Pets {
   petId          Int              @id @default(autoincrement()) @map("petId")
-  name           String           @map("name") @db.VarChar(50)
+  namePet           String           @map("namePet") @db.VarChar(50)
   userId         Int              @map("userId")
   petType        PETTYPE          @map("petType")
   age            Int              @map("age")
-  pet_Image      String           @map("pet_Image")
+  pet_Image      String?           @map("pet_Image")
   reservationPet ReservationPet[]
   user           Users            @relation(fields: [userId], references: [userId], onDelete: Cascade)
 }

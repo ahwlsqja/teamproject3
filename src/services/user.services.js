@@ -57,12 +57,13 @@ export class UsersService {
             throw new Error('비밀번호가 일치하지 않습니다.')
         }
         // token만들어줌 
-        const Acesstoken = jwt.sign({ userId: user.userId },process.env.JWT_SECRET, { expiresIn: '12h'});
+        const accessToken = jwt.sign({ userId: user.userId },process.env.JWT_SECRET, { expiresIn: '12h'});
+        console.log(accessToken)
         const refreshToken = jwt.sign({ userId: user.userId }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
 
         await this.usersRepository.saveToken(user.userId, refreshToken);
 
-        return { Acesstoken, refreshToken };
+        return { accessToken, refreshToken };
 
     }
 
@@ -79,11 +80,11 @@ export class UsersService {
                 throw new Error("리프레쉬 토큰이 유효하지 않습니다.")
             };
             
-            const Acesstoken = jwt.sign({ userId : userId }, process.env.JWT_SECRET, { expiresIn: '12h'});
+            const accessToken = jwt.sign({ userId : userId }, process.env.JWT_SECRET, { expiresIn: '12h'});
             const newRefreshToken = jwt.sign({ userId: userId }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d'})
             await this.usersRepository.saveToken(userId, newRefreshToken);
 
-            return { Acesstoken, newRefreshToken };
+            return { accessToken, newRefreshToken };
         } catch(err) {
             throw new Error('리프레시 토큰이 유효하지 않습니다.');
         }

@@ -48,7 +48,7 @@ export class Userscontroller {
                 return res.status(400).json({ message: "입력칸을 채워주세요."})
             }
             const tokens = await this.usersService.signIn(email, password);
-            res.cookie('Acesstoken', `Bearer ${tokens.token}`);
+            res.cookie('accessToken', `Bearer ${tokens.accessToken}`);
             res.cookie('refreshToken', `Bearer ${tokens.refreshToken}`);
             return res.status(200).json({ message:'로그인에 성공하였습니다.', token: tokens.token})
         } catch(err){
@@ -62,7 +62,7 @@ export class Userscontroller {
         try{
             const { refreshToken } = req.cookies; 
             const tokens = await this.usersService.refreshToken(refreshToken);
-            res.cookie('authorization', `Bearer ${tokens.newToken}`)
+            res.cookie('accessToken', `Bearer ${tokens.newToken}`)
             res.cookie('refreshToken',`Bearer ${tokens.newRefreshToken}`)
             
             return res.status(200).json({ message: '새로운 토큰 재발급에 성공했습니다.'});
