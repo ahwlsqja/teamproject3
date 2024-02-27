@@ -8,7 +8,7 @@ export class SittersService {
     this.sittersRepository = sittersRepository;
   }
 
-  //회원가입
+  //시터 회원가입
   signUp = async (
     email,
     password,
@@ -17,7 +17,6 @@ export class SittersService {
     career,
     adrress_Sitter,
     ablePetType,
-    profile_image,
     intro,
     age,
     gender
@@ -36,7 +35,6 @@ export class SittersService {
       career,
       adrress_Sitter,
       ablePetType,
-      profile_image,
       intro,
       age,
       gender
@@ -136,8 +134,17 @@ export class SittersService {
 
   //시터상세정보조회(sitterId로)
   getSitterBySitterId = async (sitterId) => {
-    const sitter = await this.sittersRepository.getSitterBySitterId(sitterId);
+    const sumofSitterGrade = await this.sittersRepository.findManySitterId(
+      sitterId
+    );
+    const stars = sumofSitterGrade.reviews.star;
+    let sum_star = 0;
+    for (const star of stars) {
+      sum_star += star;
+    }
 
+    const sitter = await this.sittersRepository.getSitterBySitterId(sitterId);
+    sitter.avg_rating = sum_star / stars.length;
     if (!sitter) {
       throw new Error("시터를 찾지 못했습니다");
     }
@@ -192,5 +199,30 @@ export class SittersService {
     await this.sittersRepository.deleteSitterSelf(email);
 
     return;
+  };
+
+  // 시터 평점순 목록 내림차순
+  findManySitterId = async () => {
+    const sitterInfo = await this.sittersRepository.findManyBySitter();
+    const rankSitter = await this.reviewsRepository.findManySitterDesc();
+    for (const rank of rankSitter) {
+      for (const sitter of sitterInfo) {
+        if (rank.sitterId === sitter.sitterId) {
+          rank.sitterName = sitter.name;
+          rank.sitterEmail = sitter.email;
+        }
+      }
+    }
+    return rankSitter;
+  };
+
+  //ablePetType으로 필터해서 가져오는 시터목록
+  getSittersBypetType = async (ablePetType) => {
+    return await this.sittersRepository.getSitterBypetType(ablePetType);
+  };
+
+  //adrress_Sitters으로 필터해서 가져오는 시터목록
+  getSittersByAddress = async (adrress_Sitters) => {
+    return await this.sittersRepository.getSittersByAddress(adrress_Sitters);
   };
 }
