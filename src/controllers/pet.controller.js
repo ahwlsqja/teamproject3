@@ -12,7 +12,7 @@ export class PetController {
       if (!namePet || !petType || !age || !imageUrl) {
         return res.status(400).json({ message: "필수값이 없습니다." });
       }
-      if (!["dog", "cat", "others"].includes(petType.toLowerCase())) {
+      if (!["dog", "cat", "others"].includes(petType)) {
         return res
           .status(400)
           .json({ message: "dog, cat, others 중 하나를 입력해주세요." });
@@ -71,7 +71,7 @@ export class PetController {
       if (isNaN(age)) {
         return res.status(400).json({ message: "나이는 숫자입니다." });
       }
-      if (!["dog", "cat", "others"].includes(petType.toLowerCase())) {
+      if (!["dog", "cat", "others"].includes(petType)) {
         return res
           .status(400)
           .json({ message: "dog, cat, others 중 하나를 입력해주세요." });
