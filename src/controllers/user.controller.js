@@ -1,3 +1,4 @@
+
 export class Userscontroller {
   constructor(usersService) {
     this.usersService = usersService;
@@ -51,14 +52,19 @@ export class Userscontroller {
     }
   };
 
-  // 이메일 인증
-  verifySignUp = async (req, res, next) => {
-    try {
-      const { email, verifiedusertoken } = req.body;
-      await this.usersService.verifySignUp(email, verifiedusertoken);
-      return res.status(200).json({ message: "인증에 성공했습니다." });
-    } catch (err) {
-      next(err);
+    // 이메일 인증
+    verifySignUp = async ( req, res, next ) => {
+        try{
+            const { email, verifiedusertoken } = req.body;
+            if(!email || !verifiedusertoken){
+                return res.status(200).json({ message: '필수 입력값을 입력해주세요'})
+            }
+            const pass_data = await this.usersService.verifySignUp(email, verifiedusertoken);
+            return res.status(200).json({ message: '인증에 성공했습니다.', data: pass_data});
+            
+        } catch(err){
+                next(err)
+        }
     }
   };
 
@@ -82,18 +88,65 @@ export class Userscontroller {
 
   // 자동 로그인
 
-  refreshToken = async (req, res, next) => {
-    try {
-      const { refreshToken } = req.cookies;
-      const tokens = await this.usersService.refreshToken(refreshToken);
-      res.cookie("accessToken", `Bearer ${tokens.accessToken}`);
-      res.cookie("refreshToken", `Bearer ${tokens.newRefreshToken}`);
-
-      return res
-        .status(200)
-        .json({ message: "새로운 토큰 재발급에 성공했습니다." });
-    } catch (err) {
-      next(err);
+    refreshToken = async (req, res, next) => {
+        try{
+            const { refreshToken } = req.cookies; 
+            const tokens = await this.usersService.refreshToken(refreshToken);
+            res.cookie('accessToken', `Bearer ${tokens.accessToken}`)
+            res.cookie('refreshToken',`Bearer ${tokens.newRefreshToken}`)
+            
+            return res.status(200).json({ message: '새로운 토큰 재발급에 성공했습니다.'});
+        } catch(err){
+            next(err);
+        }
     }
-  };
+
+    // 유저 상세 조회
+    findUserByEmail = async (req, res, next) => {
+        try{
+            const { email } = req.body;
+            if(!email){
+                return res.status(400).json({ message: "이메일을 입력해주세요."})
+            }
+            const userDetail = await this.usersService.findUserByEmail(email)
+
+            return res.status(200).json({data: userDetail })
+            } catch(err){
+                next(err);
+            }
+        }
+
+
+    // 유저 목록 조회
+    findList = async (req, res, next) => {
+        try{
+            const foundList = await this.usersService.findList()
+            return res.status(200).json({ data: foundList })
+        } catch(err){
+            next(err)
+        }
+    }
+
+    // 유저 수정
+    updateUserInfo = async(req, res, next) => {
+        try{
+            const { email, password, name, phone_Number,  intro, age, gender } = req.body
+            const imageUrl = req.file.Location;
+            if(!email || !password){
+                return res.status(400).json({ message: "이메일, 비밀번호를 입력해주세요."})
+            }
+            if(!imageUrl){
+                return res.status(400).json({ message: "파일이 없습니다."})
+            }
+            const updatedUserInfo = await this.usersService.updateUserInfo( email, password, name, phone_Number, intro, age, gender, imageUrl )
+
+            return res.status(200).json({ data: updatedUserInfo })
+
+
+        } catch(err){
+            next(err)
+        }
+
+    }
 }
+

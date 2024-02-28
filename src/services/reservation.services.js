@@ -1,6 +1,7 @@
 export class ReservationsService {
-    constructor(reservationsRepository){
-        this.reservationsRepository=reservationsRepository;
+    constructor(reservationsRepository ,usersRepository){
+        this.reservationsRepository = reservationsRepository;
+        this.usersRepository = usersRepository
     }
 
     // 예약 생성

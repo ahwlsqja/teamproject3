@@ -218,6 +218,9 @@ export class SittersService {
   // 시터 평점순 목록 내림차순
   findManySitterId = async () => {
     const sitterInfo = await this.sittersRepository.findManyBySitter();
+
+    // findManySitterDesc는 review.repositories의 코드입니다.
+
     const rankSitter = await this.reviewsRepository.findManySitterDesc();
     for (const rank of rankSitter) {
       for (const sitter of sitterInfo) {
