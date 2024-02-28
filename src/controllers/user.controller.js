@@ -75,6 +75,19 @@ export class Userscontroller {
         }
     }
 
+    //로그아웃
+
+    signOut = async (req, res, next) => {
+        try {
+        res.clearCookie("accessToken");
+        res.clearCookie("refreshToken");
+
+    return res.status(200).json({ message: "로그아웃 되었습니다." });
+    } catch (err) {
+      next(err);
+    }
+  };
+
     // 유저 상세 조회
     findUserByUserId = async (req, res, next) => {
         try{
@@ -122,5 +135,27 @@ export class Userscontroller {
         }
 
     }
+
+    // 유저 탈퇴
+    deleteUsersSelf = async (req, res, next) => {
+        try {
+          const { email, password } = req.body;
+    
+          if (!email || !password) {
+            return res
+              .status(400)
+              .json({ message: "이메일과 비밀번호를 입력해주세요." });
+          }
+    
+          await this.usersService.deleteUsersSelf(email, password);
+    
+          res.clearCookie("accessToken");
+          res.clearCookie("refreshToken");
+    
+          return res.status(200).json({ message: "시터 회원 탈퇴되었습니다." });
+        } catch (err) {
+          next(err);
+        }
+      };
 }
 

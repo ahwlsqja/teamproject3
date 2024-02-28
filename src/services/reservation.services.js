@@ -71,16 +71,18 @@ export class ReservationsService {
         // 예약 Id 찾아서 넣음
         const reservation = await this.reservationsRepository.getReservationById(reservationId);
         // 오늘 날짜 변수에 넣음
-        const today = new Date();
+        console.log(reservation)
 
+        const today = new Date();
+        console.log(userId)
         // 만약 예약이 없으면
         if(!reservation){
             throw new Error("해당 예약은 존재하지 않습니다.");
         }
         // 예약된 유저정보와 예약 취소하려는 유저정보가 다르면 
-        if(reservation.userId !== userId){
-            throw new Error("예약하지 않았습니다.")
-        }
+        // if(reservation.userId !== userId){
+        //     throw new Error("예약하지 않았습니다.")
+        // }
 
         // 만약 예약 상태가 ACCEPTED 라면 <-->(동치) 시터가 예약을 수락한다면 예약 수정 불가
         if(reservation.status === 'ACCEPTED'){
@@ -120,7 +122,7 @@ export class ReservationsService {
         if(!isExistUser){
             throw new Error("해당 유저가 없습니다.");
         }
-
+        console.log(userId)
         const foundReservationsByUser = await this.reservationsRepository.findReservationsByUser(userId);
         return foundReservationsByUser
     }

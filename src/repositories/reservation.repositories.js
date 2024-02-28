@@ -100,7 +100,7 @@ export class ReservationsRepository {
     updateReservation = async (reservationId, petIds, startDay, lastDay) => {
         const updatedReservation = await this.prisma.reservations.update({
             where: {
-                Id: reservationId
+                Id: +reservationId
             },
             data: {
                 startDay: startDay,
@@ -110,15 +110,15 @@ export class ReservationsRepository {
 
         await this.prisma.reservationPet.deleteMany({
             where: {
-                reservationId: reservationId,
+                Id: +reservationId,
             }
         });
 
         for(const petId of petIds){
             await this.prisma.reservationPet.create({
                 data: {
-                    petId: petId,
-                    reservationId: reservationId,
+                    petId: +petId,
+                    Id: +reservationId,
                 }
             });
         }
@@ -132,7 +132,7 @@ export class ReservationsRepository {
             // 해당 유저에 대한 펫들 모두 가져와서 배열로 만들어서 pets에 저장
             where: { userId : userId },
         })
-
+        console.log(pets)
         // 정보 담을 배열 선언
         let petListofReservation = [];
         for (const pet of pets){
@@ -144,9 +144,13 @@ export class ReservationsRepository {
             
             // petReservations 배열 순회 돌면서 각요소 reservation에 대한 reservations 정보를 모두 담어서 각각 배열에 push
             for (const reservation of petReservations){
-                petListofReservation.push(reservation.reservations)
+                petListofReservation.push({...reservation.reservations, 
+                petId:  reservation.petId,
+                petName: pet.namePet})
             }
         }
+
+        return petListofReservation
 
     }
 

@@ -131,5 +131,10 @@ export class UsersRepository {
         });
       };
 
-    
+    // 유저 회원 탈퇴
+    deleteUsersSelf = async (email) => {
+        return await this.prisma.users.delete({
+        where: { email: email },
+        });
+    };
 }

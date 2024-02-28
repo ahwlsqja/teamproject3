@@ -123,8 +123,21 @@ export class UsersService {
 
         return findList
     }
-
     
+    // 유저 탈퇴
+    deleteUsersSelf = async (email, password) => {
+        const user = await this.usersRepository.findUserByEmail(email);
+        const checkPassword = await bcrypt.compare(password,user.password);
+
+        if(!checkPassword) {
+            throw new Error("비번틀렸습니다!")
+        }
+
+        await this.usersRepository.deleteUsersSelf(email);
+
+    }
+
+
     // 유저 정보 수정
     updateUserInfo = async( email, password, name, phone_Number, intro, age, gender, imageUrl) =>{
         const user = await this.usersRepository.findUserByEmail(email)

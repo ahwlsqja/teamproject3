@@ -24,6 +24,9 @@ router.patch('/sign-up-verify', userscontroller.verifySignUp)
 // 로그인 API
 router.post('/sign-in', userscontroller.signIn)
 
+// 로그아웃 API
+router.post('/log-out', userscontroller.signOut)
+
 // 자동로그인 API(리프래시 토큰)
 router.post('/refresh', authMiddleware, userscontroller.refreshToken)
 
@@ -36,6 +39,8 @@ router.get('/list', userscontroller.findList)
 // 유저 수정 API
 router.patch('/edit', uploadUserImage, userscontroller.updateUserInfo)
 
+// 회원 탈퇴 APi
+router.delete('/withdraw', authMiddleware, userscontroller.deleteUsersSelf)
 
 
 
