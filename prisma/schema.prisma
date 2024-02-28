@@ -60,19 +60,19 @@ model Reviews {
 
 model Sitters {
   sitterId       Int            @id @default(autoincrement()) @map("sitterId")
-  email          String         @map("email")
+  email          String         @unique @map("email")
   name           String         @map("name") @db.VarChar(50)
   profile_Image  String?        @map("profile_Image")
-  emailTokens    String?            @map("emailTokens")
+  emailTokens    String?        @map("emailTokens")
   phone_Number   String         @map("phone_Number")
-  password       Int            @map("password")
+  password       String         @map("password")
   createdAt      DateTime       @default(now()) @map("createdAt")
   updatedAt      DateTime       @updatedAt @map("updatedAt")
   career         Int            @map("career")
   sitter_Status  Sitter_Status  @default(nonpass)     
   intro          String?        @map("intro")
   age            Int?           @map("age")
-  gender         Gender         @map("gender")
+  gender         Gender?         @map("gender")
   address_Sitters Address_Sitters   @map("address_Sitters")
   ablePetType    Ablepettype    @map("ablePetType")
   reservations   Reservations[]
@@ -107,21 +107,21 @@ enum Ablepettype {
 }
 
 model Reservations {
-  Id             Int              @id
+  Id             Int              @id @default(autoincrement()) @map("Id")
   sitterId       Int
   startDay       DateTime
   lastDay        DateTime
   createdAt      DateTime         @default(now())
-  updatedAt      DateTime
-  status         TASKSTATUS       @default(accepted)
+  updatedAt      DateTime         @default(now())
+  status         TASKSTATUS       @default(ACCEPTED)
   reservationPet ReservationPet[]
   sitters        Sitters          @relation(fields: [sitterId], references: [sitterId], onDelete: Cascade)
 }
 
 enum TASKSTATUS {
-  accepted
-  applying
-  regected
+  ACCEPTED
+  APPLYING 
+  REJECTED 
 }
 
 model ReservationPet {
@@ -134,7 +134,7 @@ model ReservationPet {
 
 model Pets {
   petId          Int              @id @default(autoincrement()) @map("petId")
-  namePet           String           @map("namePet") @db.VarChar(50)
+  namePet        String           @map("namePet") @db.VarChar(50)
   userId         Int              @map("userId")
   petType        PETTYPE          @map("petType")
   age            Int              @map("age")

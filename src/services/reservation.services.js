@@ -30,7 +30,7 @@ export class ReservationsService {
         }
 
         // 예약 생성
-        const reservation = await this.reservationsRepository.createReservation(userId, sitterId, petIds, startDay, lastDay);
+        const reservation = await this.reservationsRepository.createReservation(sitterId, petIds, startDay, lastDay);
     
         return reservation;
     }

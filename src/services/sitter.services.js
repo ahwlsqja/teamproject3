@@ -1,17 +1,14 @@
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import "dotenv/config.js";
 
-
 export class SittersService {
-    constructor(sittersRepository, reviewsRepository){
-        this.sittersRepository = sittersRepository;
-        this.reviewsRepository = reviewsRepository;
-    }
+  constructor(sittersRepository, reviewsRepository) {
+    this.sittersRepository = sittersRepository;
+    this.reviewsRepository = reviewsRepository;
+  }
 
-
-
-  //회원가입
+  //시터 회원가입
   signUp = async (
     email,
     password,
@@ -20,13 +17,13 @@ export class SittersService {
     career,
     address_Sitters,
     ablePetType,
-    profile_Image,
     intro,
     age,
-    gender
+    gender,
+    imageUrl
   ) => {
     const isExistSitter = await this.sittersRepository.findSitterByEmail(email);
-    if (!isExistSitter) {
+    if (isExistSitter) {
       throw new Error("이미 시터로 가입한 이메일입니다.");
     }
 
@@ -39,15 +36,14 @@ export class SittersService {
       career,
       address_Sitters,
       ablePetType,
-      profile_Image,
       intro,
       age,
-      gender
+      gender,
+      imageUrl
     );
 
     return sitter;
   };
-
 
   // 회원가입 이메일 인증
   verifySignUp = async (email, verifiedusertoken) => {
@@ -64,7 +60,7 @@ export class SittersService {
     );
   };
 
-    //시터 로그인
+  //시터 로그인
   signIn = async (email, password) => {
     const sitter = await this.sittersRepository.findSitterByEmail(email);
 
@@ -100,37 +96,36 @@ export class SittersService {
       throw new Error("리프레쉬 토큰이 없습니다.");
     }
     try {
-      const { sitterId } = jwt.verify(
-        refreshToken,
-        process.env.JWT_REFRESH_SECRET
-      );
+      const [tokenType, token] = refreshToken.split(" ");
+      const { sitterId } = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
       const savedRefreshToken = await this.sittersRepository.getToken(sitterId);
-      if (refreshToken !== savedRefreshToken) {
+
+      if (token !== savedRefreshToken) {
         throw new Error("리프레쉬 토큰이 유효하지 않습니다.");
       }
 
-      const newToken = jwt.sign(
-        { sitterId: sitterId },
+      const accessToken = jwt.sign(
+        { sitterId: +sitterId },
         process.env.JWT_SECRET,
         {
           expiresIn: "12h",
         }
       );
       const newRefreshToken = jwt.sign(
-        { sitterId: sitterId },
+        { sitterId: +sitterId },
         process.env.JWT_REFRESH_SECRET,
         { expiresIn: "7d" }
       );
       await this.sittersRepository.saveToken(sitterId, newRefreshToken);
 
-      return { newToken, newRefreshToken };
+      return { accessToken, newRefreshToken };
     } catch (err) {
       throw new Error("리프레시 토큰이 유효하지 않습니다.");
     }
   };
 
-   //시터목록조회(정렬)
-   getSitterList = async (orderKey, orderValue) => {
+  //시터목록조회(정렬)
+  getSitterList = async (orderKey, orderValue) => {
     const sitters = await this.sittersRepository.getSitterList(
       orderKey,
       orderValue
@@ -138,28 +133,40 @@ export class SittersService {
     return sitters;
   };
 
+  // 특정 시터의 상세 조회
+  getSitterBySitterId = async (sitterId) => {
+    const findSittersavgstar = await this.reviewsRepository.findSittersavgstar(
+      sitterId
+    );
 
+    const sitter = await this.sittersRepository.findSitterById(sitterId);
+    if (!sitter) {
+      throw new Error("시터를 찾지 못했습니다");
+    }
 
+    sitter.avg_rating = findSittersavgstar[0]
+      ? findSittersavgstar[0]._avg.star
+      : 0;
 
-    // 특정 시터의 상세 조회
-    getSitterBySitterId = async(sitterId) => {
-        const sumofSitterGrade = await this.sittersRepository.findManySitterId(sitterId)
-        const stars = sumofSitterGrade.reviews.star
-        let sum_star = 0
-        for(const star of stars){
-            sum_star += star
-        }
+    return {
+      sitterId: sitter.sitterId,
+      email: sitter.email,
+      name: sitter.name,
+      phone_Number: sitter.phone_Number,
+      career: sitter.career,
+      address_Sitters: sitter.address_Sitters,
+      ablePetType: sitter.ablePetType,
+      profile_Image: sitter.profile_Image,
+      intro: sitter.intro,
+      age: sitter.age,
+      gender: sitter.gender,
+      createdAt: sitter.createdAt,
+      updatedAt: sitter.updatedAt,
+      avg_rating: sitter.avg_rating,
+    };
+  };
 
-        const sitter = await this.sittersRepository.getSitterBySitterId(sitterId);
-        sitter.avg_rating = (sum_star / stars.length)
-        if (!sitter) {
-          throw new Error("시터를 찾지 못했습니다");
-        }
-    
-        return sitter;
-      };
-
-    //시터 정보 수정
+  //시터 정보 수정
   updateSitterInfo = async (
     email,
     password,
@@ -170,7 +177,8 @@ export class SittersService {
     age,
     gender,
     address_Sitters,
-    ablePetType
+    ablePetType,
+    imageUrl
   ) => {
     const sitter = await this.sittersRepository.findSitterByEmail(email);
     const checkPassword = await bcrypt.compare(password, sitter.password);
@@ -179,7 +187,7 @@ export class SittersService {
       throw new Error("비밀번호가 다릅니다.");
     }
 
-    await this.sittersRepository.updateSitterInfo(
+    return await this.sittersRepository.updateSitterInfo(
       email,
       name,
       phone_Number,
@@ -188,14 +196,12 @@ export class SittersService {
       age,
       gender,
       address_Sitters,
-      ablePetType
+      ablePetType,
+      imageUrl
     );
-
-    return;
   };
 
-
-    //시터 회원 탈퇴
+  //시터 회원 탈퇴
   deleteSitterSelf = async (password, email) => {
     const sitter = await this.sittersRepository.findSitterByEmail(email);
     const checkPassword = await bcrypt.compare(password, sitter.password);
@@ -211,31 +217,49 @@ export class SittersService {
 
   // 시터 평점순 목록 내림차순
   findManySitterId = async () => {
-      const sitterInfo = await this.sittersRepository.findManyBySitter();
-      
-      // findManySitterDesc는 review.repositories의 코드입니다.
+    const sitterInfo = await this.sittersRepository.findManyBySitter();
 
-      const rankSitter = await this.reviewsRepository.findManySitterDesc();
-      for(const rank of rankSitter){
-        for(const sitter of sitterInfo){
-          if(rank.sitterId === sitter.sitterId){
-            rank.sitterName = sitter.name
-            rank.sitterEmail = sitter.email
-          }
+    // findManySitterDesc는 review.repositories의 코드입니다.
+
+    const rankSitter = await this.reviewsRepository.findManySitterDesc();
+    for (const rank of rankSitter) {
+      for (const sitter of sitterInfo) {
+        if (rank.sitterId === sitter.sitterId) {
+          rank.sitterName = sitter.name;
+          rank.sitterEmail = sitter.email;
         }
       }
-      return rankSitter
     }
+    return rankSitter;
+  };
 
-
-    //ablePetType으로 필터해서 가져오는 시터목록
-      getSittersBypetType = async (ablePetType) => {
-        return await this.sittersRepository.getSitterBypetType(ablePetType)
-    }
-
+  //ablePetType으로 필터해서 가져오는 시터목록
+  getSitterBypetType = async (ablePetType) => {
+    const findList = await this.sittersRepository.getSitterBypetType(
+      ablePetType
+    );
+    return findList.map((sitter) => ({
+      sitterId: sitter.sitterId,
+      name: sitter.name,
+      profile_Image: sitter.profile_Image,
+      career: sitter.career,
+      address_Sitters: sitter.address_Sitters,
+      ablePetType: sitter.ablePetType,
+    }));
+  };
 
   //adrress_Sitters으로 필터해서 가져오는 시터목록
-    getSittersByAddress = async (address_Sitters) => {
-        return await this.sittersRepository.getSittersByAddress(address_Sitters)
-    }
+  getSittersByAddress = async (adrress_Sitters) => {
+    const findList = await this.sittersRepository.getSittersByAddress(
+      adrress_Sitters
+    );
+    return findList.map((sitter) => ({
+      sitterId: sitter.sitterId,
+      name: sitter.name,
+      profile_Image: sitter.profile_Image,
+      career: sitter.career,
+      address_Sitters: sitter.address_Sitters,
+      ablePetType: sitter.ablePetType,
+    }));
+  };
 }

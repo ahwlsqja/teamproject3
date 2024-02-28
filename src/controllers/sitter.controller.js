@@ -1,8 +1,8 @@
 export class SittersController {
-    constructor(sittersService){
-        this.sittersService = sittersService;
-    }
-    //시터 회원가입
+  constructor(sittersService) {
+    this.sittersService = sittersService;
+  }
+  //시터 회원가입
   signUp = async (req, res, next) => {
     try {
       const {
@@ -47,12 +47,12 @@ export class SittersController {
       }
 
       //성별 값이 있는데 enum문자열이 아니면 에러
-      if (!["MALE", "FEMALE"].includes(gender.toUpperCase())) {
+      if (gender && !["MALE", "FEMALE"].includes(gender)) {
         return res.status(400).json({ message: "성별을 바르게 입력해주세요." });
       }
 
       //ablePetType값이 enum문자열이 아니면 에러
-      if (!["dog", "cat", "others"].includes(ablePetType.toLowerCase())) {
+      if (!["dog", "cat", "others"].includes(ablePetType)) {
         return res.status(400).json({
           message: "펫 종류 입력이 올바르지 않습니다.",
         });
@@ -71,7 +71,7 @@ export class SittersController {
           "gyeongbuk",
           "gyeongnam",
           "jeju",
-        ].includes(address_Sitters.toLowerCase())
+        ].includes(address_Sitters)
       ) {
         return res
           .status(400)
@@ -100,15 +100,15 @@ export class SittersController {
     }
   };
 
-    // 시터 이메일 인증
-    verifySignUp = async (req, res, next) => {
-        try {
-        const { email, verifiedsittertoken } = req.body;
-        await this.sittersService.verifySignUp(email, verifiedsittertoken);
-            return res.status(200).json({ message: "인증에 성공했습니다." });
-        } catch (err) {
-        next(err);
-        }
+  // 시터 이메일 인증
+  verifySignUp = async (req, res, next) => {
+    try {
+      const { email, verifiedsittertoken } = req.body;
+      await this.sittersService.verifySignUp(email, verifiedsittertoken);
+      return res.status(200).json({ message: "인증에 성공했습니다." });
+    } catch (err) {
+      next(err);
+    }
   };
 
   // 시터 로그인
@@ -123,19 +123,18 @@ export class SittersController {
       res.cookie("refreshToken", `Bearer ${tokens.refreshToken}`);
       return res.status(200).json({
         message: "로그인에 성공하였습니다.",
-        token: tokens.accessToken,
       });
     } catch (err) {
       next(err);
     }
   };
 
-   // 자동 로그인
-   refreshToken = async (req, res, next) => {
+  // 자동 로그인
+  refreshToken = async (req, res, next) => {
     try {
       const { refreshToken } = req.cookies;
       const tokens = await this.sittersService.refreshToken(refreshToken);
-      res.cookie("accessToken", `Bearer ${tokens.newToken}`);
+      res.cookie("accessToken", `Bearer ${tokens.accessToken}`);
       res.cookie("refreshToken", `Bearer ${tokens.newRefreshToken}`);
 
       return res
@@ -149,8 +148,8 @@ export class SittersController {
   //로그아웃
   signOut = async (req, res, next) => {
     try {
-      res.clearCookies("accessToken");
-      res.clearCookies("refreshToken");
+      res.clearCookie("accessToken");
+      res.clearCookie("refreshToken");
 
       return res.status(200).json({ message: "로그아웃 되었습니다." });
     } catch (err) {
@@ -158,8 +157,8 @@ export class SittersController {
     }
   };
 
- //시터 목록 조회(경력순정렬)
- getSitterList = async (req, res, next) => {
+  //시터 목록 조회(경력순정렬)
+  getSitterList = async (req, res, next) => {
     try {
       const orderKey = req.query.orderKey ?? "career";
       const orderValue = req.query.orderValue ?? "desc";
@@ -187,13 +186,27 @@ export class SittersController {
     }
   };
 
+  // 시터 평점순 목록 내림차순
+  findManySitterId = async (req, res, next) => {
+    try{
+      const highList = await this.sittersService.findManySitterId()
+
+      return res.status(200).json({ data: highList });
+
+      
+
+    }catch (err) {
+      next(err);
+    }
+  }
+
+  
   //시터 마이페이지
   getSitterSelf = async (req, res, next) => {
     try {
       const { sitterId } = req.sitter;
-
       const sitter = await this.sittersService.getSitterBySitterId(sitterId);
-      return res.ststus(200).json({ data: sitter });
+      return res.status(200).json({ data: sitter });
     } catch (err) {
       next(err);
     }
@@ -205,16 +218,17 @@ export class SittersController {
       const { sitterId } = req.params;
 
       const sitter = await this.sittersService.getSitterBySitterId(sitterId);
-      return res.ststus(200).json({ data: sitter });
+      return res.status(200).json({ data: sitter });
     } catch (err) {
       next(err);
     }
   };
 
-//시터 정보 수정
-updateSitterInfo = async (req, res, next) => {
+  //시터 정보 수정
+  updateSitterInfo = async (req, res, next) => {
     try {
       const {
+        email,
         password,
         name,
         phone_Number,
@@ -225,17 +239,18 @@ updateSitterInfo = async (req, res, next) => {
         address_Sitters,
         ablePetType,
       } = req.body;
-      const { email } = req.sitter; //이메일주소로 받아야함
+
+      const imageUrl = req.file.Location;
 
       //시터정보를 수정하려면 password를 필수적으로 입력해서 본인을 확인해야함.
-      if (!password) {
-        return res
-          .status(400)
-          .json({ message: "정보를 수정하시려면 비밀번호를 입력해주세요." });
+      if (!email || !password) {
+        return res.status(400).json({
+          message: "이메일과 비밀번호를 입력해주세요.",
+        });
       }
 
       //성별 값이 있는데 enum문자열이 아니면 에러
-      if (gender && !["MALE", "FEMALE"].includes(gender.toLowerCase())) {
+      if (gender && !["MALE", "FEMALE"].includes(gender)) {
         return res.status(400).json({ message: "성별을 바르게 입력해주세요." });
       }
 
@@ -253,7 +268,7 @@ updateSitterInfo = async (req, res, next) => {
           "gyeongbuk",
           "gyeongnam",
           "jeju",
-        ].includes(address_Sitters.toLowerCase())
+        ].includes(address_Sitters)
       ) {
         return res
           .status(400)
@@ -261,16 +276,13 @@ updateSitterInfo = async (req, res, next) => {
       }
 
       //ablePetType값이 있는데 enum문자열이 아니면 에러
-      if (
-        ablePetType &&
-        !["dog", "cat", "others"].includes(ablePetType.toLowerCase())
-      ) {
+      if (ablePetType && !["dog", "cat", "others"].includes(ablePetType)) {
         return res.status(400).json({
           message: "펫 종류 입력이 올바르지 않습니다.",
         });
       }
 
-      await this.sittersService.updateSitterInfo(
+      const updatedData = await this.sittersService.updateSitterInfo(
         email,
         password,
         name,
@@ -280,12 +292,14 @@ updateSitterInfo = async (req, res, next) => {
         age,
         gender,
         address_Sitters,
-        ablePetType
+        ablePetType,
+        imageUrl
       );
 
-      return res
-        .sytatus(201)
-        .json({ message: "시터정보 수정사항이 저장되었습니다." });
+      return res.status(201).json({
+        message: "시터정보 수정사항이 저장되었습니다.",
+        data: updatedData,
+      });
     } catch (err) {
       next(err);
     }
@@ -296,65 +310,74 @@ updateSitterInfo = async (req, res, next) => {
     try {
       const { email, password } = req.body;
 
+      if (!email || !password) {
+        return res
+          .status(400)
+          .json({ message: "이메일과 비밀번호를 입력해주세요." });
+      }
+
       await this.sittersService.deleteSitterSelf(password, email);
 
-      res.clearCookies("accessToken");
-      res.clearCookies("refreshToken");
+      res.clearCookie("accessToken");
+      res.clearCookie("refreshToken");
 
-      return res.ststus(200).json({ message: "시터 회원 탈퇴되었습니다." });
+      return res.status(200).json({ message: "시터 회원 탈퇴되었습니다." });
     } catch (err) {
       next(err);
     }
   };
 
-   //ablePetType으로 필터해서 가져오는 시터목록
-    getSittersBypetType = async (req, res, next) => {
-        const { ablePetType } = req.query;
+  //ablePetType으로 필터해서 가져오는 시터목록
+  getSittersBypetType = async (req, res, next) => {
+    const { ablePetType } = req.query;
 
-        try{ 
-           if(!ablePetType){
-            return res.status(400).json({ message : "종을 선택 해주세요."});
-           }
+    try {
+      if (!ablePetType) {
+        return res.status(400).json({ message: "종을 선택 해주세요." });
+      }
 
-           if(!['dog', 'cat', 'others'].includes(ablePetType.toLowerCase())){
-            return res.status(400).json({ message: "종선택이 바르지 않습니다"})
-           }
+      if (!["dog", "cat", "others"].includes(ablePetType)) {
+        return res.status(400).json({ message: "종선택이 바르지 않습니다" });
+      }
 
-           const filleredSittersByPetType = await this.sittersService.getSitterBypetType(ablePetType)
-           return res.status(200).json({ data:filleredSittersByPetType })
-        } catch(err){
-            next(err)
-        }
+      const filleredSittersByPetType =
+        await this.sittersService.getSitterBypetType(ablePetType);
+      return res.status(200).json({ data: filleredSittersByPetType });
+    } catch (err) {
+      next(err);
     }
+  };
 
-     //adrress_Sitters으로 필터해서 가져오는 시터목록
-    getSittersByAddress = async ( req, res, next) => {
-        const { address_Sitters } = req.query;
-        try{ 
-            if(!address_Sitters){
-             return res.status(400).json({ message : "주소를 선택 해주세요."});
-            }
- 
-            if(!['seoul',
-                'gyeonggi',
-                'gangwon',
-                'chungbuk',
-                'chungnam',
-                'jeonbuk',
-                'jeonnam',
-                'gyeongbuk',
-                'gyeongnam',
-                'jeju'].includes(address_Sitters.toLowerCase())){
-             return res.status(400).json({ message: "주소 선택이 바르지 않습니다"})
-            }
- 
-            const filleredSittersByAddress = await this.sittersService.getSittersByAddress(address_Sitters)
-            return res.status(200).json({ data:filleredSittersByAddress })
-         } catch(err){
-             next(err)
-         }
+  //adrress_Sitters으로 필터해서 가져오는 시터목록
+  getSittersByAddress = async (req, res, next) => {
+    const { address_Sitters } = req.query;
+    try {
+      if (!address_Sitters) {
+        return res.status(400).json({ message: "주소를 선택 해주세요." });
+      }
+
+      if (
+        ![
+          "seoul",
+          "gyeonggi",
+          "gangwon",
+          "chungbuk",
+          "chungnam",
+          "jeonbuk",
+          "jeonnam",
+          "gyeongbuk",
+          "gyeongnam",
+          "jeju",
+        ].includes(address_Sitters)
+      ) {
+        return res.status(400).json({ message: "주소 선택이 바르지 않습니다" });
+      }
+
+      const filleredSittersByAddress =
+        await this.sittersService.getSittersByAddress(address_Sitters);
+      return res.status(200).json({ data: filleredSittersByAddress });
+    } catch (err) {
+      next(err);
     }
-
-    
-
+  };
 }

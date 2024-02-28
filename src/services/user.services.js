@@ -90,12 +90,23 @@ export class UsersService {
 
     
     // 유저 상세 조회
-    findUserByEmail = async (email) => {
-        const user = await this.usersRepository.findUserByEmail(email);
+    findUserByUserId = async (userId) => {
+        const user = await this.usersRepository.findUserByUserId(userId);
         if(!user){
-            throw new Error('해당하는 이메일이 없습니다.')
+            throw new Error('해당하는 유저 이 없습니다.')
         }
-        return await this.usersRepository.getUserByemailPet(email)
+        return {
+            userId: user.userId,
+            email: user.email,
+            name: user.name,
+            phone_Number: user.phone_Number,
+            profile_Image: user.profile_Image,
+            intro: user.intro,
+            age: user.age,
+            gender: user.gender,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+          };
     }
 
 

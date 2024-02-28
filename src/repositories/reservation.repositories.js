@@ -73,7 +73,7 @@ export class ReservationsRepository {
     getReservationById = async (reservationId) => {
         return await this.prisma.reservations.findUnique({
             where: {
-                Id: reservationId
+                Id: +reservationId
             }
         })
     }
@@ -179,7 +179,7 @@ export class ReservationsRepository {
     ReservationAcceptBySitter = async(reservationId) => {
         const updatedReservation = await this.prisma.reservations.update({
             where: {
-                Id: reservationId
+                Id: +reservationId
             },
             data: {
                 status: "ACCEPTED"
@@ -194,7 +194,7 @@ export class ReservationsRepository {
     ReservationRejectBySitter = async(reservationId) => {
         const updatedRejectReservation = await this.prisma.reservations.update({
             where: {
-                Id: reservationId
+                Id: +reservationId
             },
             data: {
                 status: "REJECTED"

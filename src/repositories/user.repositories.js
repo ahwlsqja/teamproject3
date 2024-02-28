@@ -15,6 +15,7 @@ export class UsersRepository {
         });
     }
 
+
     // email로 유저 찾기(펫까지 찾아줌)
     getUserByemailPet = async (email) => {
         return await this.prisma.users.findMany({
@@ -129,5 +130,6 @@ export class UsersRepository {
           },
         });
       };
+
     
 }

@@ -5,17 +5,20 @@ export class PetController {
 
   createPet = async (req, res, next) => {
     try {
-      const { userId }  = req.user;
+      const { userId } = req.user;
       const imageUrl = req.file.Location;
       const { namePet, petType, age } = req.body;
 
-      console.log('s1', userId);
       if (!namePet || !petType || !age || !imageUrl) {
-          return res.status(400).json({ message: "필수값이 없습니다."});
+        return res.status(400).json({ message: "필수값이 없습니다." });
       }
-
       if (!["dog", "cat", "others"].includes(petType.toLowerCase())) {
-        return res.status(400).json({ message: "petType 없습니다."});
+        return res
+          .status(400)
+          .json({ message: "dog, cat, others 중 하나를 입력해주세요." });
+      }
+      if (isNaN(age)) {
+        return res.status(400).json({ message: "나이는 숫자입니다." });
       }
 
       const createdPet = await this.petService.createPet(
@@ -30,7 +33,6 @@ export class PetController {
       next(error);
     }
   };
-
   // 펫 1마리 조회하기
   findOnePet = async (req, res, next) => {
     try {
@@ -44,7 +46,6 @@ export class PetController {
       next(err);
     }
   };
-
 
   // 유저 1인의 모든펫 조회하기
   findUserPets = async (req, res, next) => {
@@ -64,24 +65,25 @@ export class PetController {
     try {
       const { userId } = req.user;
       const { petId } = req.params;
-      const { name, petType, age } = req.body;
-      const { pet_Image } = req.file.Location;
+      const { namePet, petType, age } = req.body;
+      const imageUrl = req.file.Location;
 
-      if (!(userId || name || petType || age || pet_Image)) {
-        return res.status(400).json({ message: "모든 필드를 입력해주세요 "});
+      if (isNaN(age)) {
+        return res.status(400).json({ message: "나이는 숫자입니다." });
       }
-
-      if (petType !== "DOG" && petType !== "CAT" && petType !== "Others") {
-        return res.status(400).json({ message: "개나 고양이나 Others 입니다. "});
+      if (!["dog", "cat", "others"].includes(petType.toLowerCase())) {
+        return res
+          .status(400)
+          .json({ message: "dog, cat, others 중 하나를 입력해주세요." });
       }
 
       const updatePetInfo = await this.petService.updatePetInfo(
         userId,
         petId,
-        name,
+        namePet,
         petType,
         age,
-        pet_Image
+        imageUrl
       );
 
       return res.status(200).json({ data: updatePetInfo });
@@ -96,37 +98,27 @@ export class PetController {
       const { userId } = req.user;
       const { petId } = req.params;
       const { email, password } = req.body;
-      if(!email || !password) {
-        return res.status(400).json({ message: "모든 필드를 입력해주세요 "})
+      if (!email || !password) {
+        return res.status(400).json({ message: "모든 필드를 입력해주세요 " });
       }
-
       await this.petService.deletePetInfo(userId, petId, email, password);
 
-      return res.status(200).json({message: "반려동물 정보가 삭제되었습니다."});
+      return res
+        .status(200)
+        .json({ message: "반려동물 정보가 삭제되었습니다." });
     } catch (err) {
       next(err);
     }
   };
 
   // 종류별 펫 찾기
-  findPetByPetType = async (req, res, next) => {
+  findPetsByPetType = async (req, res, next) => {
     try {
-      const { petType } = req.params;
-      if (
-        petType !== "DOG" &&
-        petType !== "CAT" &&
-        petType !== "Others"
-      ) {
-        return res.status(200).json({message: "type을 다시 입력해주세요."});
-
-      }
-      const petTypeInfo = await this.petService.findPetByPetType(petType);
-      return res.status(200).json({ message: `${petTypeInfo.petType}종류 입니다.`,
-                                    data: petTypeInfo });
+      const petType = req.query.petType.split(",");
+      const petsByType = await this.petService.findPetsByPetType(petType);
+      return res.status(200).json({ data: petsByType });
     } catch (err) {
       next(err);
     }
   };
-
-
 }

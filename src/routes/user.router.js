@@ -28,7 +28,7 @@ router.post('/sign-in', userscontroller.signIn)
 router.post('/refresh', authMiddleware, userscontroller.refreshToken)
 
 // 유저 조회 API
-router.get('/detail', userscontroller.findUserByEmail)
+router.get('/detail/:userId', userscontroller.findUserByUserId)
 
 // 유저 목록 조회 API
 router.get('/list', userscontroller.findList)

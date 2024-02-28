@@ -76,13 +76,13 @@ export class Userscontroller {
     }
 
     // 유저 상세 조회
-    findUserByEmail = async (req, res, next) => {
+    findUserByUserId = async (req, res, next) => {
         try{
-            const { email } = req.body;
-            if(!email){
-                return res.status(400).json({ message: "이메일을 입력해주세요."})
+            const { userId } = req.params;
+            if(!userId){
+                return res.status(400).json({ message: "입력해주세요."})
             }
-            const userDetail = await this.usersService.findUserByEmail(email)
+            const userDetail = await this.usersService.findUserByUserId(userId)
 
             return res.status(200).json({data: userDetail })
             } catch(err){
