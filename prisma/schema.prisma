@@ -1,9 +1,7 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -59,29 +57,29 @@ model Reviews {
 }
 
 model Sitters {
-  sitterId       Int             @id @default(autoincrement()) @map("sitterId")
-  email          String          @map("email")
-  name           String          @map("name") @db.VarChar(50)
-  profile_image  String?         @map("profile_image")
-  email_verified Int             @map("email_verified")
-  phone_number   String          @map("phone_number")
-  password       Int             @map("password")
-  createdAt      DateTime        @default(now()) @map("createdAt")
-  updatedAt      DateTime        @updatedAt @map("updatedAt")
-  career         Int             @map("career")
-  sitter_Status  Sitter_Status   @default(nonpass) @map("Sitter_Status")
-  intro          String?         @map("intro")
-  age            Int?            @map("age")
-  gender         Int?            @map("gender")
-  adrress_Sitter Adrress_Sitters @map("Adrress_Sitters")
-  ablepettype    Ablepettype     @map("ablepettype")
-  reservations   Reservations[]
-  reviews        Reviews[]
+  sitterId        Int             @id @default(autoincrement()) @map("sitterId")
+  email           String          @map("email")
+  name            String          @map("name") @db.VarChar(50)
+  profile_Image   String?         @map("profile_Image")
+  emailTokens     String?         @map("emailTokens")
+  phone_Number    String          @map("phone_Number")
+  password        Int             @map("password")
+  createdAt       DateTime        @default(now()) @map("createdAt")
+  updatedAt       DateTime        @updatedAt @map("updatedAt")
+  career          Int             @map("career")
+  sitter_Status   Sitter_Status   @default(nonpass)
+  intro           String?         @map("intro")
+  age             Int?            @map("age")
+  gender          Gender          @map("gender")
+  address_Sitters Address_Sitters @map("Adrress_Sitters")
+  ablePetType     Ablepettype     @map("ablepettype")
+  reservations    Reservations[]
+  reviews         Reviews[]
 
   @@map("Sitters")
 }
 
-enum Adrress_Sitters {
+enum Address_Sitters {
   seoul
   gyeonggi
   gangwon
