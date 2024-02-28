@@ -116,4 +116,44 @@ export class ReviewsController {
       next(err);
     }
   };
+
+  // 특정 userId가 작성한 리뷰 찾기
+  getReviewsByUserId = async (req, res, next) => {
+    try {
+      const { userId } = req.params;
+
+      if (!userId) {
+        return res.status(400).json({ message: "유저 아이디를 입력해주세요." });
+      }
+
+      const reviews = await this.reviewsService.findReviewsByUserId(userId);
+
+      return res.status(200).json({
+        message: `${userId}번 유저가 작성한 리뷰입니다.`,
+        data: reviews,
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  // 특정 sitterId가 받은 리뷰 모아보기
+  getReviewsBySitterId = async (req, res, next) => {
+    try {
+      const { sitterId } = req.params;
+
+      if (!sitterId) {
+        return res.status(400).json({ message: "시터 아이디를 입력해주세요." });
+      }
+
+      const reviews = await this.reviewsService.findReviewsBySitterId(sitterId);
+
+      return res.status(200).json({
+        message: `${sitterId}번 시터가 받은 리뷰입니다.`,
+        data: reviews,
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
 }

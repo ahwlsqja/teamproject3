@@ -100,4 +100,22 @@ export class ReviewsRepository {
 
     return sortedReviews;
   };
+
+  // 특정 userId가 작성한 리뷰 찾기
+  findReviewsByUserId = async (userId) => {
+    return await this.prisma.reviews.findMany({
+      where: {
+        userId: +userId,
+      },
+    });
+  };
+
+  // 특정 sitterId가 받은 리뷰 모아보기
+  findReviewsBySitterId = async (sitterId) => {
+    return await this.prisma.reviews.findMany({
+      where: {
+        sitterId: +sitterId,
+      },
+    });
+  };
 }

@@ -30,4 +30,18 @@ router.delete(
   reviewsController.deleteReview
 );
 
+// 특정 userId가 작성한 리뷰 찾기
+router.get(
+  "/userId/:userId",
+  authMiddleware,
+  reviewsController.getReviewsByUserId
+);
+
+// 특정 sitterId가 받은 리뷰 모아보기
+router.get(
+  "/sitterId/:sitterId",
+  authMiddleware,
+  reviewsController.getReviewsBySitterId
+);
+
 export default router;
