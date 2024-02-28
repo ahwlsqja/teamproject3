@@ -314,9 +314,9 @@ export class SittersController {
 
   //ablePetType으로 필터해서 가져오는 시터목록
   getSittersBypetType = async (req, res, next) => {
-    const { ablePetType } = req.query;
-
     try {
+      const ablePetType = req.query.ablePetType || "dog";
+
       if (!ablePetType) {
         return res.status(400).json({ message: "종을 선택 해주세요." });
       }
@@ -335,7 +335,7 @@ export class SittersController {
 
   //adrress_Sitters으로 필터해서 가져오는 시터목록
   getSittersByAddress = async (req, res, next) => {
-    const { address_Sitters } = req.query;
+    const address_Sitters = req.query.address_Sitters || "seoul";
     try {
       if (!address_Sitters) {
         return res.status(400).json({ message: "주소를 선택 해주세요." });

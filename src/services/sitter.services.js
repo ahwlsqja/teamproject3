@@ -184,7 +184,7 @@ export class SittersService {
     const checkPassword = await bcrypt.compare(password, sitter.password);
 
     if (!checkPassword) {
-      throw new Error("비밀번호가 다릅니다.");
+      throw new Error("비밀번호가 일치하지 않습니다.");
     }
 
     return await this.sittersRepository.updateSitterInfo(
