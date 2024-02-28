@@ -10,6 +10,9 @@ export class ReviewsService {
     const isExistUser = await this.reviewsRepository.findUserById(userId);
     const isExistSitter = await this.reviewsRepository.findSitterById(sitterId);
 
+    if (!isExistUser) {
+      throw new Error("로그인을 먼저 진행해주세요.");
+    }
     if (!isExistSitter) {
       throw new Error("해당 시터가 존재하지 않습니다.");
     }

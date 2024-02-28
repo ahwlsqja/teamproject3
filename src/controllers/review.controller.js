@@ -12,7 +12,7 @@ export class ReviewsController {
       const { sitterId } = req.params;
       const { password, title, content, star } = req.body;
 
-      if (!title || !content || !password || !sitterId || !star) {
+      if (!title || !content || !password || !star) {
         return res
           .status(400)
           .json({ message: "모든 입력칸을 입력해주세요. " });
@@ -53,7 +53,7 @@ export class ReviewsController {
           .json({ message: "모든 입력칸을 입력해주세요. " });
       }
 
-      if (!(1 <= star <= 5)) {
+      if (!(1 <= star && star <= 5)) {
         throw new Error("평점은 1~5점 사이에서만 작성이 가능합니다.");
       }
 
@@ -83,9 +83,7 @@ export class ReviewsController {
       const { password } = req.body;
 
       if (!password) {
-        return res
-          .status(400)
-          .json({ message: "모든 입력칸을 입력해주세요. " });
+        return res.status(400).json({ message: "비밀번호를 입력해주세요." });
       }
 
       const deletedReview = await this.reviewsService.deleteReview(
@@ -106,9 +104,7 @@ export class ReviewsController {
       const { sitterId } = req.params;
 
       if (!sitterId) {
-        return res
-          .status(400)
-          .json({ message: "모든 입력칸을 입력해주세요. " });
+        return res.status(400).json({ message: "시터 아이디를 입력해주세요." });
       }
 
       const sitterExperted = await this.reviewsService.sitterExpert(sitterId);

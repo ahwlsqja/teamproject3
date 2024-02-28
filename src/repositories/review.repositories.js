@@ -38,15 +38,16 @@ export class ReviewsRepository {
   };
 
   // 댓글 수정
-  updateReview = async (reviewid, title, content, star) => {
+  updateReview = async (reviewId, title, content, star) => {
     const updatedReview = await prisma.reviews.update({
       where: {
-        reviewid: +reviewid,
+        reviewId: +reviewId,
       },
       data: {
         title,
         content,
         star,
+        userId: +userId,
       },
     });
 
@@ -54,10 +55,10 @@ export class ReviewsRepository {
   };
 
   // 댓글 삭제
-  deleteReview = async (reviewid) => {
+  deleteReview = async (reviewId) => {
     return await prisma.reviews.delete({
       where: {
-        reviewid: +reviewid,
+        reviewId: +reviewId,
       },
     });
   };
