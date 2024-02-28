@@ -42,6 +42,8 @@ router.patch('/edit', uploadUserImage, userscontroller.updateUserInfo)
 // 회원 탈퇴 APi
 router.delete('/withdraw', authMiddleware, userscontroller.deleteUsersSelf)
 
+// 유저 마이페이지 API
+router.get('/mypage', authMiddleware, userscontroller.getUserSelf)
 
 
 export default router

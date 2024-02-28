@@ -88,6 +88,19 @@ export class Userscontroller {
     }
   };
 
+
+  //유저 마이페이지
+  getUserSelf = async (req, res, next) => {
+    try {
+      const { userId } = req.user;
+      const user = await this.usersService.getUserByUserId(userId);
+      return res.status(200).json({ data: user });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  
     // 유저 상세 조회
     findUserByUserId = async (req, res, next) => {
         try{

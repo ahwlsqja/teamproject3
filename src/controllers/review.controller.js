@@ -39,6 +39,7 @@ export class ReviewsController {
       next(err);
     }
   };
+  
 
   // 리뷰 수정
   updateReview = async (req, res, next) => {
@@ -112,6 +113,75 @@ export class ReviewsController {
       const sitterExperted = await this.reviewsService.sitterExpert(sitterId);
 
       return res.status(200).json({ data: sitterExperted });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+
+  // 특정 userId가 작성한 리뷰 찾기
+  getReviewsByUserId = async (req, res, next) => {
+    try {
+      const { userId } = req.params;
+
+
+      const reviews = await this.reviewsService.findReviewsByUserId(userId);
+
+      return res.status(200).json({
+        message: `${userId}번 유저가 작성한 리뷰입니다.`,
+        data: reviews,
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  // 특정 sitterId가 받은 리뷰 모아보기
+  getReviewsBySitterId = async (req, res, next) => {
+    try {
+      const { sitterId } = req.params;
+
+
+      const reviews = await this.reviewsService.findReviewsBySitterId(sitterId);
+
+      return res.status(200).json({
+        message: `${sitterId}번 시터가 받은 리뷰입니다.`,
+        data: reviews,
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  // 로그인 된 유저가 작성한 리뷰 찾기
+  getUserInfoReviews = async (req, res, next) => {
+    try {
+      const { userId } = req.user;
+
+
+      const reviews = await this.reviewsService.findReviewsByUserId(userId);
+
+      return res.status(200).json({
+        message: `${userId}번 유저가 작성한 리뷰입니다.`,
+        data: reviews,
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  // 로그인 된 시터가 받은 리뷰 모아보기
+  getSitterInfoReviews = async (req, res, next) => {
+    try {
+      const { sitterId } = req.sitter;
+
+
+      const reviews = await this.reviewsService.findReviewsBySitterId(sitterId);
+
+      return res.status(200).json({
+        message: `${sitterId}번 시터가 받은 리뷰입니다.`,
+        data: reviews,
+      });
     } catch (err) {
       next(err);
     }

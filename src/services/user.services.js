@@ -123,6 +123,18 @@ export class UsersService {
 
         return findList
     }
+
+
+    // 특정 시터의 상세 조회
+    getUserByUserId = async (userId) => {
+
+    const user = await this.usersRepository.getUserById(userId);
+    if (!user) {
+      throw new Error("유저를 찾지 못했습니다");
+    }
+
+    return user
+  };
     
     // 유저 탈퇴
     deleteUsersSelf = async (email, password) => {
