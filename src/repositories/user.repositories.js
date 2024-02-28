@@ -124,7 +124,7 @@ export class UsersRepository {
             phone_Number,
             intro,
             age: +age,
-            gender: gender.toUpperCase(),
+            gender,
             profile_Image: imageUrl,
           },
         });

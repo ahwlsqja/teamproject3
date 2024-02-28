@@ -33,7 +33,8 @@ router.get('/detail', userscontroller.findUserByEmail)
 // 유저 목록 조회 API
 router.get('/list', userscontroller.findList)
 
-router.patch('/edit', userscontroller.updateUserInfo)
+// 유저 수정 API
+router.patch('/edit', uploadUserImage, userscontroller.updateUserInfo)
 
 
 

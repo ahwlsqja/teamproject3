@@ -101,6 +101,7 @@ export class Userscontroller {
         }
     }
 
+    // 유저 수정
     updateUserInfo = async(req, res, next) => {
         try{
             const { email, password, name, phone_Number,  intro, age, gender } = req.body
@@ -111,7 +112,7 @@ export class Userscontroller {
             if(!imageUrl){
                 return res.status(400).json({ message: "파일이 없습니다."})
             }
-            updatedUserInfo = await this.usersService.updateUserInfo( email, password, name, phone_Number, intro, age, gender, imageUrl )
+            const updatedUserInfo = await this.usersService.updateUserInfo( email, password, name, phone_Number, intro, age, gender, imageUrl )
 
             return res.status(200).json({ data: updatedUserInfo })
 
