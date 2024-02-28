@@ -44,12 +44,13 @@ router.get("/career", sittersController.getSitterList);
 router.get("/mypage", authSitterMiddleware, sittersController.getSitterSelf);
 
 // 타인이 시터 상세조회 API
-router.get("/detail", sittersController.getSitterBySitterId);
+router.get("/detail/:sitterId", sittersController.getSitterBySitterId);
 
 // 시터 정보 수정 API
-router.put(
+router.patch(
   "/detail-edit",
   authSitterMiddleware,
+  uploadUserImage,
   sittersController.updateSitterInfo
 );
 
@@ -61,17 +62,9 @@ router.delete(
 );
 
 // 펫 종류 필터링 시터 목록 조회 API
-router.get(
-  "/pettype",
-  authSitterMiddleware,
-  sittersController.getSittersBypetType
-);
+router.get("/pettype", sittersController.getSittersBypetType);
 
 // 주소 필터링 목록 조회 API
-router.get(
-  "/address",
-  authSitterMiddleware,
-  sittersController.getSittersByAddress
-);
+router.get("/address", sittersController.getSittersByAddress);
 
 export default router;

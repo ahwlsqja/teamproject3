@@ -47,12 +47,12 @@ export class SittersController {
       }
 
       //성별 값이 있는데 enum문자열이 아니면 에러
-      if (!["MALE", "FEMALE"].includes(gender.toUpperCase())) {
+      if (gender && !["MALE", "FEMALE"].includes(gender)) {
         return res.status(400).json({ message: "성별을 바르게 입력해주세요." });
       }
 
       //ablePetType값이 enum문자열이 아니면 에러
-      if (!["dog", "cat", "others"].includes(ablePetType.toLowerCase())) {
+      if (!["dog", "cat", "others"].includes(ablePetType)) {
         return res.status(400).json({
           message: "펫 종류 입력이 올바르지 않습니다.",
         });
@@ -71,7 +71,7 @@ export class SittersController {
           "gyeongbuk",
           "gyeongnam",
           "jeju",
-        ].includes(address_Sitters.toLowerCase())
+        ].includes(address_Sitters)
       ) {
         return res
           .status(400)
@@ -123,7 +123,6 @@ export class SittersController {
       res.cookie("refreshToken", `Bearer ${tokens.refreshToken}`);
       return res.status(200).json({
         message: "로그인에 성공하였습니다.",
-        token: tokens.accessToken,
       });
     } catch (err) {
       next(err);
@@ -135,7 +134,7 @@ export class SittersController {
     try {
       const { refreshToken } = req.cookies;
       const tokens = await this.sittersService.refreshToken(refreshToken);
-      res.cookie("accessToken", `Bearer ${tokens.newToken}`);
+      res.cookie("accessToken", `Bearer ${tokens.accessToken}`);
       res.cookie("refreshToken", `Bearer ${tokens.newRefreshToken}`);
 
       return res
@@ -149,8 +148,8 @@ export class SittersController {
   //로그아웃
   signOut = async (req, res, next) => {
     try {
-      res.clearCookies("accessToken");
-      res.clearCookies("refreshToken");
+      res.clearCookie("accessToken");
+      res.clearCookie("refreshToken");
 
       return res.status(200).json({ message: "로그아웃 되었습니다." });
     } catch (err) {
@@ -191,9 +190,8 @@ export class SittersController {
   getSitterSelf = async (req, res, next) => {
     try {
       const { sitterId } = req.sitter;
-
       const sitter = await this.sittersService.getSitterBySitterId(sitterId);
-      return res.ststus(200).json({ data: sitter });
+      return res.status(200).json({ data: sitter });
     } catch (err) {
       next(err);
     }
@@ -205,7 +203,7 @@ export class SittersController {
       const { sitterId } = req.params;
 
       const sitter = await this.sittersService.getSitterBySitterId(sitterId);
-      return res.ststus(200).json({ data: sitter });
+      return res.status(200).json({ data: sitter });
     } catch (err) {
       next(err);
     }
@@ -215,6 +213,7 @@ export class SittersController {
   updateSitterInfo = async (req, res, next) => {
     try {
       const {
+        email,
         password,
         name,
         phone_Number,
@@ -225,17 +224,18 @@ export class SittersController {
         address_Sitters,
         ablePetType,
       } = req.body;
-      const { email } = req.sitter; //이메일주소로 받아야함
+
+      const imageUrl = req.file.Location;
 
       //시터정보를 수정하려면 password를 필수적으로 입력해서 본인을 확인해야함.
-      if (!password) {
-        return res
-          .status(400)
-          .json({ message: "정보를 수정하시려면 비밀번호를 입력해주세요." });
+      if (!email || !password) {
+        return res.status(400).json({
+          message: "이메일과 비밀번호를 입력해주세요.",
+        });
       }
 
       //성별 값이 있는데 enum문자열이 아니면 에러
-      if (gender && !["MALE", "FEMALE"].includes(gender.toLowerCase())) {
+      if (gender && !["MALE", "FEMALE"].includes(gender)) {
         return res.status(400).json({ message: "성별을 바르게 입력해주세요." });
       }
 
@@ -253,7 +253,7 @@ export class SittersController {
           "gyeongbuk",
           "gyeongnam",
           "jeju",
-        ].includes(address_Sitters.toLowerCase())
+        ].includes(address_Sitters)
       ) {
         return res
           .status(400)
@@ -261,16 +261,13 @@ export class SittersController {
       }
 
       //ablePetType값이 있는데 enum문자열이 아니면 에러
-      if (
-        ablePetType &&
-        !["dog", "cat", "others"].includes(ablePetType.toLowerCase())
-      ) {
+      if (ablePetType && !["dog", "cat", "others"].includes(ablePetType)) {
         return res.status(400).json({
           message: "펫 종류 입력이 올바르지 않습니다.",
         });
       }
 
-      await this.sittersService.updateSitterInfo(
+      const updatedData = await this.sittersService.updateSitterInfo(
         email,
         password,
         name,
@@ -280,12 +277,14 @@ export class SittersController {
         age,
         gender,
         address_Sitters,
-        ablePetType
+        ablePetType,
+        imageUrl
       );
 
-      return res
-        .sytatus(201)
-        .json({ message: "시터정보 수정사항이 저장되었습니다." });
+      return res.status(201).json({
+        message: "시터정보 수정사항이 저장되었습니다.",
+        data: updatedData,
+      });
     } catch (err) {
       next(err);
     }
@@ -296,12 +295,18 @@ export class SittersController {
     try {
       const { email, password } = req.body;
 
+      if (!email || !password) {
+        return res
+          .status(400)
+          .json({ message: "이메일과 비밀번호를 입력해주세요." });
+      }
+
       await this.sittersService.deleteSitterSelf(password, email);
 
-      res.clearCookies("accessToken");
-      res.clearCookies("refreshToken");
+      res.clearCookie("accessToken");
+      res.clearCookie("refreshToken");
 
-      return res.ststus(200).json({ message: "시터 회원 탈퇴되었습니다." });
+      return res.status(200).json({ message: "시터 회원 탈퇴되었습니다." });
     } catch (err) {
       next(err);
     }
@@ -316,7 +321,7 @@ export class SittersController {
         return res.status(400).json({ message: "종을 선택 해주세요." });
       }
 
-      if (!["dog", "cat", "others"].includes(ablePetType.toLowerCase())) {
+      if (!["dog", "cat", "others"].includes(ablePetType)) {
         return res.status(400).json({ message: "종선택이 바르지 않습니다" });
       }
 
@@ -348,7 +353,7 @@ export class SittersController {
           "gyeongbuk",
           "gyeongnam",
           "jeju",
-        ].includes(address_Sitters.toLowerCase())
+        ].includes(address_Sitters)
       ) {
         return res.status(400).json({ message: "주소 선택이 바르지 않습니다" });
       }

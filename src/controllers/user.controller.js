@@ -62,37 +62,38 @@ export class Userscontroller {
     }
   };
 
-    // 로그인
-    signIn = async (req, res, next) => {
-        try {
-            const { email, password } = req.body;
-            if(!email || !password) {
-                return res.status(400).json({ message: "입력칸을 채워주세요."})
-            }
-            const tokens = await this.usersService.signIn(email, password);
-            res.cookie('accessToken', `Bearer ${tokens.accessToken}`);
-            res.cookie('refreshToken', `Bearer ${tokens.refreshToken}`);
-            return res.status(200).json({ message:'로그인에 성공하였습니다.', token: tokens.token})
-        } catch(err){
-            next(err)
-        }
-    }
-
-  // 자동 로그인
-
-    refreshToken = async (req, res, next) => {
-        try{
-            const { refreshToken } = req.cookies; 
-            const tokens = await this.usersService.refreshToken(refreshToken);
-            res.cookie('accessToken', `Bearer ${tokens.newToken}`)
-            res.cookie('refreshToken',`Bearer ${tokens.newRefreshToken}`)
-            
-            return res.status(200).json({ message: '새로운 토큰 재발급에 성공했습니다.'});
-        } catch(err){
-            next(err);
-        }
+  // 로그인
+  signIn = async (req, res, next) => {
+    try {
+      const { email, password } = req.body;
+      if (!email || !password) {
+        return res.status(400).json({ message: "입력칸을 채워주세요." });
+      }
+      const tokens = await this.usersService.signIn(email, password);
+      res.cookie("accessToken", `Bearer ${tokens.accessToken}`);
+      res.cookie("refreshToken", `Bearer ${tokens.refreshToken}`);
+      return res
+        .status(200)
+        .json({ message: "로그인에 성공하였습니다.", token: tokens.token });
+    } catch (err) {
+      next(err);
     }
   };
 
-  // 유저 조회
+  // 자동 로그인
+
+  refreshToken = async (req, res, next) => {
+    try {
+      const { refreshToken } = req.cookies;
+      const tokens = await this.usersService.refreshToken(refreshToken);
+      res.cookie("accessToken", `Bearer ${tokens.accessToken}`);
+      res.cookie("refreshToken", `Bearer ${tokens.newRefreshToken}`);
+
+      return res
+        .status(200)
+        .json({ message: "새로운 토큰 재발급에 성공했습니다." });
+    } catch (err) {
+      next(err);
+    }
+  };
 }

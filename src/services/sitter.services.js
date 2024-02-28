@@ -3,8 +3,9 @@ import jwt from "jsonwebtoken";
 import "dotenv/config.js";
 
 export class SittersService {
-  constructor(sittersRepository) {
+  constructor(sittersRepository, reviewsRepository) {
     this.sittersRepository = sittersRepository;
+    this.reviewsRepository = reviewsRepository;
   }
 
   //시터 회원가입
@@ -18,10 +19,11 @@ export class SittersService {
     ablePetType,
     intro,
     age,
-    gender
+    gender,
+    imageUrl
   ) => {
     const isExistSitter = await this.sittersRepository.findSitterByEmail(email);
-    if (!isExistSitter) {
+    if (isExistSitter) {
       throw new Error("이미 시터로 가입한 이메일입니다.");
     }
 
@@ -36,7 +38,8 @@ export class SittersService {
       ablePetType,
       intro,
       age,
-      gender
+      gender,
+      imageUrl
     );
 
     return sitter;
@@ -93,30 +96,29 @@ export class SittersService {
       throw new Error("리프레쉬 토큰이 없습니다.");
     }
     try {
-      const { sitterId } = jwt.verify(
-        refreshToken,
-        process.env.JWT_REFRESH_SECRET
-      );
+      const [tokenType, token] = refreshToken.split(" ");
+      const { sitterId } = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
       const savedRefreshToken = await this.sittersRepository.getToken(sitterId);
-      if (refreshToken !== savedRefreshToken) {
+
+      if (token !== savedRefreshToken) {
         throw new Error("리프레쉬 토큰이 유효하지 않습니다.");
       }
 
-      const newToken = jwt.sign(
-        { sitterId: sitterId },
+      const accessToken = jwt.sign(
+        { sitterId: +sitterId },
         process.env.JWT_SECRET,
         {
           expiresIn: "12h",
         }
       );
       const newRefreshToken = jwt.sign(
-        { sitterId: sitterId },
+        { sitterId: +sitterId },
         process.env.JWT_REFRESH_SECRET,
         { expiresIn: "7d" }
       );
       await this.sittersRepository.saveToken(sitterId, newRefreshToken);
 
-      return { newToken, newRefreshToken };
+      return { accessToken, newRefreshToken };
     } catch (err) {
       throw new Error("리프레시 토큰이 유효하지 않습니다.");
     }
@@ -133,22 +135,35 @@ export class SittersService {
 
   // 특정 시터의 상세 조회
   getSitterBySitterId = async (sitterId) => {
-    const sumofSitterGrade = await this.sittersRepository.findManySitterId(
+    const findSittersavgstar = await this.reviewsRepository.findSittersavgstar(
       sitterId
     );
-    const stars = sumofSitterGrade.reviews.star;
-    let sum_star = 0;
-    for (const star of stars) {
-      sum_star += star;
-    }
 
-    const sitter = await this.sittersRepository.getSitterBySitterId(sitterId);
-    sitter.avg_rating = sum_star / stars.length;
+    const sitter = await this.sittersRepository.findSitterById(sitterId);
     if (!sitter) {
       throw new Error("시터를 찾지 못했습니다");
     }
 
-    return sitter;
+    sitter.avg_rating = findSittersavgstar[0]
+      ? findSittersavgstar[0]._avg.star
+      : 0;
+
+    return {
+      sitterId: sitter.sitterId,
+      email: sitter.email,
+      name: sitter.name,
+      phone_Number: sitter.phone_Number,
+      career: sitter.career,
+      address_Sitters: sitter.address_Sitters,
+      ablePetType: sitter.ablePetType,
+      profile_Image: sitter.profile_Image,
+      intro: sitter.intro,
+      age: sitter.age,
+      gender: sitter.gender,
+      createdAt: sitter.createdAt,
+      updatedAt: sitter.updatedAt,
+      avg_rating: sitter.avg_rating,
+    };
   };
 
   //시터 정보 수정
@@ -162,7 +177,8 @@ export class SittersService {
     age,
     gender,
     address_Sitters,
-    ablePetType
+    ablePetType,
+    imageUrl
   ) => {
     const sitter = await this.sittersRepository.findSitterByEmail(email);
     const checkPassword = await bcrypt.compare(password, sitter.password);
@@ -171,7 +187,7 @@ export class SittersService {
       throw new Error("비밀번호가 다릅니다.");
     }
 
-    await this.sittersRepository.updateSitterInfo(
+    return await this.sittersRepository.updateSitterInfo(
       email,
       name,
       phone_Number,
@@ -180,10 +196,9 @@ export class SittersService {
       age,
       gender,
       address_Sitters,
-      ablePetType
+      ablePetType,
+      imageUrl
     );
-
-    return;
   };
 
   //시터 회원 탈퇴
@@ -216,12 +231,32 @@ export class SittersService {
   };
 
   //ablePetType으로 필터해서 가져오는 시터목록
-  getSittersBypetType = async (ablePetType) => {
-    return await this.sittersRepository.getSitterBypetType(ablePetType);
+  getSitterBypetType = async (ablePetType) => {
+    const findList = await this.sittersRepository.getSitterBypetType(
+      ablePetType
+    );
+    return findList.map((sitter) => ({
+      sitterId: sitter.sitterId,
+      name: sitter.name,
+      profile_Image: sitter.profile_Image,
+      career: sitter.career,
+      address_Sitters: sitter.address_Sitters,
+      ablePetType: sitter.ablePetType,
+    }));
   };
 
   //adrress_Sitters으로 필터해서 가져오는 시터목록
   getSittersByAddress = async (adrress_Sitters) => {
-    return await this.sittersRepository.getSittersByAddress(adrress_Sitters);
+    const findList = await this.sittersRepository.getSittersByAddress(
+      adrress_Sitters
+    );
+    return findList.map((sitter) => ({
+      sitterId: sitter.sitterId,
+      name: sitter.name,
+      profile_Image: sitter.profile_Image,
+      career: sitter.career,
+      address_Sitters: sitter.address_Sitters,
+      ablePetType: sitter.ablePetType,
+    }));
   };
 }
