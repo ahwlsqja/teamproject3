@@ -49,7 +49,7 @@ router.get('/mypage', authSitterMiddleware, sittersController.getSitterSelf);
 router.get('/detail', sittersController.getSitterBySitterId);
 
 // 시터 정보 수정 API
-router.put('/detail-edit',authSitterMiddleware, sittersController.updateSitterInfo);
+router.patch('/detail-edit',authSitterMiddleware, sittersController.updateSitterInfo);
 
 // 시터 회원탈퇴 API
 router.delete('/withdraw', authSitterMiddleware, sittersController.deleteSitterSelf);

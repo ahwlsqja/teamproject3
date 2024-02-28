@@ -26,21 +26,15 @@ export class UsersService {
 
     // 회원가입 이메일 인증
     verifySignUp = async ( email, verifiedusertoken ) => {
-        await new Promise((resolve) => setTimeout(resolve, 2000));
         const user = await this.usersRepository.findUserByEmail(email);
-        if(!user.email_verified){
+        if(!user.emailTokens){
             throw new Error("인증번호가 없습니다.");
         }
 
-        if(verifiedusertoken !== user.email_verified){
+        if(verifiedusertoken !== user.emailTokens){
             throw new Error("실패했습니다.");
         }
-        await this.usersRepository.updateUserVerificationStatus(user.userId);
-        try{
-            await sendTodayData();
-        }catch(err){
-            next(err)
-        }
+        return await this.usersRepository.updateUserVerificationStatus(user.userId);
     }
 
     // 로그인 
@@ -77,13 +71,8 @@ export class UsersService {
             // userId 뱉음 jwt.verify가
             const [ tokenType, token ] = refreshToken.split(' ');
             const { userId } = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
-            console.log(userId)
-            
-            console.log(1234)
             const savedRefreshToken = await this.usersRepository.getToken(userId);
-            console.log(123234)
-            console.log(savedRefreshToken)
-            console.log(123424)
+
 
             if(token !== savedRefreshToken){
                 throw new Error("리프레쉬 토큰이 유효하지 않습니다.")
@@ -106,38 +95,40 @@ export class UsersService {
         if(!user){
             throw new Error('해당하는 이메일이 없습니다.')
         }
-        return {
-            userId: user.userId,
-            email: user.email,
-            name: user.name,
-            age: user.age,
-            gender: user.gender,
-            intro: user.intro,
-            pets: {
-                select: {
-                    petId: true,
-                    name: true,
-                    pettype: true,
-                    },
-                },
-            };
-        };
+        return await this.usersRepository.getUserByemailPet(email)
+    }
+
 
     // 유저 목록 조회
     findList = async () => {
-        return await this.usersRepository.findList()
+        const findList = await this.usersRepository.findList()
+        for(const info of findList)
+        {
+            delete info.password,
+            delete info.user_status,
+            delete info.email,
+            delete info.userId
+        }
+
+        return findList
     }
 
-//     // 유저 정보 수정
-//     updateUserInfo = async( email, password, name, phone_Number, career, intro, age, gender, imageUrl) =>{
-//         const user = await this.usersRepository.findUserByEmail(email)
-//         if(!user){
-//             throw new Error("해당하는 유저가 없습니다.");
-//         }
-//         if(password !== usre)
-        
+    
+    // 유저 정보 수정
+    updateUserInfo = async( email, password, name, phone_Number, intro, age, gender, imageUrl) =>{
+        const user = await this.usersRepository.findUserByEmail(email)
+        if(!user){
+            throw new Error("해당하는 유저가 없습니다.");
+        }
 
-//     }
+
+        if(!(await bcrypt.compare(password, user.password))){
+            throw new Error('비밀번호가 일치하지 않습니다.')
+        }
+
+        return await this.usersRepository.updateUserInfo(email, name, phone_Number, intro, age, gender, imageUrl)
+
+    }
 // };
 
 }

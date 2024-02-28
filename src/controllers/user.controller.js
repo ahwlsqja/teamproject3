@@ -33,8 +33,11 @@ export class Userscontroller {
     verifySignUp = async ( req, res, next ) => {
         try{
             const { email, verifiedusertoken } = req.body;
-            await this.usersService.verifySignUp(email, verifiedusertoken);
-            return res.status(200).json({ message: '인증에 성공했습니다.'});
+            if(!email || !verifiedusertoken){
+                return res.status(200).json({ message: '필수 입력값을 입력해주세요'})
+            }
+            const pass_data = await this.usersService.verifySignUp(email, verifiedusertoken);
+            return res.status(200).json({ message: '인증에 성공했습니다.', data: pass_data});
             
         } catch(err){
                 next(err)
@@ -98,7 +101,25 @@ export class Userscontroller {
         }
     }
 
+    updateUserInfo = async(req, res, next) => {
+        try{
+            const { email, password, name, phone_Number,  intro, age, gender } = req.body
+            const imageUrl = req.file.Location;
+            if(!email || !password){
+                return res.status(400).json({ message: "이메일, 비밀번호를 입력해주세요."})
+            }
+            if(!imageUrl){
+                return res.status(400).json({ message: "파일이 없습니다."})
+            }
+            updatedUserInfo = await this.usersService.updateUserInfo( email, password, name, phone_Number, intro, age, gender, imageUrl )
+
+            return res.status(200).json({ data: updatedUserInfo })
 
 
+        } catch(err){
+            next(err)
+        }
+
+    }
 }
 

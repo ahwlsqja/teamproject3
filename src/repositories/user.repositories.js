@@ -15,6 +15,27 @@ export class UsersRepository {
         });
     }
 
+    // email로 유저 찾기(펫까지 찾아줌)
+    getUserByemailPet = async (email) => {
+        return await this.prisma.users.findMany({
+            where: { email: email },
+            select: {
+                userId: true,
+                email: true,
+                createdAt: true,
+                updatedAt: true,
+                pets : {
+                    select : {
+                        namePet: true,
+                        petId: true,
+                        petType: true,
+                        age: true,
+                    }
+                }
+            }
+        })
+    }
+
     // Id로 유저 찾기(펫까지 찾아줌)
     getUserById = async (userId) => {
         return await this.prisma.users.findMany({
@@ -47,7 +68,8 @@ export class UsersRepository {
 
     // 유저 목록 조회
     findList = async() =>{
-        return await this.prisma.users.findMany()
+        return await this.prisma.users.findMany(
+            )
     }
 
     // 유저 생성하기
@@ -88,20 +110,18 @@ export class UsersRepository {
 
 
     getToken = async (userId) => {
-        console.log(1)
         return await this.redisClient.hGet(tokenKey(userId), 'token')
     }
 
 
     // 유저 수정 
-    updateUserInfo = async (email, name, phone_Number, career, intro, age, gender, imageUrl
+    updateUserInfo = async (email, name, phone_Number,intro, age, gender, imageUrl
       ) => {
-        return await this.prisma.sitters.update({
+        return await this.prisma.users.update({
           where: { email: email },
           data: {
             name,
             phone_Number,
-            career: +career,
             intro,
             age: +age,
             gender: gender.toUpperCase(),
