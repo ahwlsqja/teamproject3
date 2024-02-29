@@ -26,7 +26,7 @@ const sittersController = new SittersController(sittersService);
 router.post("/sign-up", uploadUserImage, sittersController.signUp);
 
 // 이메일 인증 API
-router.put("/sign-up-verify", sittersController.verifySignUp);
+router.patch("/sign-up-verify", sittersController.verifySignUp);
 
 // 로그인 API
 router.post("/sign-in", sittersController.signIn);

@@ -104,8 +104,11 @@ export class SittersController {
   verifySignUp = async (req, res, next) => {
     try {
       const { email, verifiedsittertoken } = req.body;
-      await this.sittersService.verifySignUp(email, verifiedsittertoken);
-      return res.status(200).json({ message: "인증에 성공했습니다." });
+      if(!email || !verifiedsittertoken){
+        return res.status(200).json({ message: '필수 입력값을 입력해주세요'})
+    }
+    const pass_data =  await this.sittersService.verifySignUp(email, verifiedsittertoken);
+      return res.status(200).json({ message: "인증에 성공했습니다.", data: pass_data });
     } catch (err) {
       next(err);
     }

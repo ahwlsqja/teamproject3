@@ -46,16 +46,16 @@ export class SittersService {
   };
 
   // 회원가입 이메일 인증
-  verifySignUp = async (email, verifiedusertoken) => {
+  verifySignUp = async (email, verifiedsittertoken) => {
     const sitter = await this.sittersRepository.findSitterByEmail(email);
-    if (!sitter.email_verified) {
+    if (!sitter.emailTokens) {
       throw new Error("인증번호가 없습니다.");
     }
 
-    if (verifiedusertoken !== sitter.emailTokens) {
+    if (verifiedsittertoken !== sitter.emailTokens) {
       throw new Error("실패했습니다.");
     }
-    await this.sittersRepository.updateSitterVerificationStatus(
+    return await this.sittersRepository.updateSitterVerificationStatus(
       sitter.sitterId
     );
   };

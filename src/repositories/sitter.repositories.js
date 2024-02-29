@@ -48,7 +48,7 @@ export class SittersRepository {
   updateSitterVerificationStatus = async (sitterId) => {
     await this.prisma.sitters.update({
       where: { sitterId: +sitterId },
-      data: { sitter_status: "pass" },
+      data: { sitter_Status: "pass" },
     });
   };
 

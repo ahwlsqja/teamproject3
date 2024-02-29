@@ -165,7 +165,7 @@ export class Userscontroller {
           res.clearCookie("accessToken");
           res.clearCookie("refreshToken");
     
-          return res.status(200).json({ message: "시터 회원 탈퇴되었습니다." });
+          return res.status(200).json({ message: "유저 회원 탈퇴되었습니다." });
         } catch (err) {
           next(err);
         }
